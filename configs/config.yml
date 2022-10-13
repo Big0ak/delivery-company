@@ -1,0 +1,7 @@
+port: 8000
+
+db:   
+    server: "localhost"
+    user: "sa"
+    port: "1433"
+    database: "Transport_company"
