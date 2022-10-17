@@ -3,7 +3,18 @@ package repository
 import (
 	"database/sql"
 	"fmt"
+
 	_ "github.com/denisenkom/go-mssqldb"
+)
+
+// названия таблиц
+const (
+	managerTable = "Manager"
+	clientTable  = "Client"
+	autoTable    = "Auto"
+	driverTable  = "Driver"
+	ordersTable  = "Orders"
+	routeTable   = "Route"
 )
 
 type Config struct {
@@ -14,17 +25,17 @@ type Config struct {
 	Database string
 }
 
-func GetDB(cfg Config) (db *sql.DB, err error){
+func GetDB(cfg Config) (db *sql.DB, err error) {
 	connString := fmt.Sprintf("server=%s;user id=%s;password=%s;port=%s;database=%s;",
 		cfg.Server, cfg.User, cfg.Password, cfg.Port, cfg.Database)
-	
+
 	db, err = sql.Open("sqlserver", connString)
 	if err != nil {
 		return nil, err
 	}
 
 	err = db.Ping()
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 

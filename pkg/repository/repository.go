@@ -1,25 +1,31 @@
 package repository
 
-import "database/sql"
+import (
+	"database/sql"
 
-type Authorization interface{
+	//"github.com/Big0ak/delivery-company/models"
+)
+
+// type AuthorizationDB interface{
+// 	CreateUserDB(models.Manager) (int, error)
+// }
+
+type OrdersDB interface{
 
 }
 
-type Orders interface{
-
-}
-
-type Route interface{
+type RouteDB interface{
 
 }
 
 type Repository struct{
-	Authorization
-	Orders
-	Route
+	*AuthSQLServer
+	OrdersDB
+	RouteDB
 }
 
 func NewRepository (db *sql.DB) *Repository{
-	return &Repository{}
+	return &Repository{
+		AuthSQLServer: NewAuthQLServer(db),
+	}
 }

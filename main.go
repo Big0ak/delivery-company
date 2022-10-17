@@ -1,18 +1,21 @@
 package main
 
 import (
-	"log"
+	//"log"
 	"os"
-	api "github.com/Big0ak/DeliveryCompany"
-	handler "github.com/Big0ak/DeliveryCompany/pkg/hendler"
-	"github.com/Big0ak/DeliveryCompany/pkg/repository"
-	"github.com/Big0ak/DeliveryCompany/pkg/service"
+
+	api "github.com/Big0ak/delivery-company/api"
+	handler "github.com/Big0ak/delivery-company/pkg/hendler"
+	"github.com/Big0ak/delivery-company/pkg/repository"
+	"github.com/Big0ak/delivery-company/pkg/service"
 	"github.com/joho/godotenv"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
 func main() {
-	if err := initConfig(); err != nil {
+	log.SetFormatter((new(log.JSONFormatter))) // JSON формат для log
+ 	if err := initConfig(); err != nil {
 		log.Fatalf("error initializing config: %s", err.Error())
 	}
 
@@ -33,7 +36,7 @@ func main() {
 	}
 
 	repos := repository.NewRepository(db)
-	services := service.NewService(repos)
+	services := service.NewService(repos, repos.AuthSQLServer)
 	handlers := handler.NewHandler(services)
 	//handlers := new(handler.Handler)
 

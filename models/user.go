@@ -1,19 +1,20 @@
 package models
 
+// binding:"required" валидация для Gin
 type Client struct {
 	ClientID         int    `json:"-"`
-	UserLogin        string `json:"login"`
-	Password         string `json:"password"`
-	Name             string `json:"name"`
-	Surname          string `json:"surname"`
-	Phone            string `json:"phone"`
-	RegistrationDate string `json:"registrationDate"`
+	UserLogin        string `json:"login" binding:"required"`
+	Password         string `json:"password" binding:"required"`
+	Name             string `json:"name" binding:"required"`
+	Surname          string `json:"surname" binding:"required"`
+	Phone            string `json:"phone" binding:"required"`
+	RegistrationDate string `json:"registrationDate" binding:"required"`
 }
 
 type Manager struct {
 	ManagerID    int    `json:"-"`
-	ManagerLogin string `json:"login"`
-	Password     string `json:"password"`
-	Name         string `json:"name"`
-	Surname      string `json:"surname"`
+	ManagerLogin string `json:"login" binding:"required"`
+	Password     string `json:"password" binding:"required"`
+	Name         string `json:"name" binding:"required"`
+	Surname      string `json:"surname" binding:"required"`
 }

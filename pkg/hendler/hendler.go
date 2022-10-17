@@ -1,9 +1,9 @@
 package handler
 
 import (
+	"github.com/Big0ak/delivery-company/models"
 	"github.com/gin-gonic/gin"
 	//"github.com/Big0ak/DeliveryCompany/pkg/service"
-
 )
 
 type Handler struct{
@@ -13,9 +13,12 @@ type Handler struct{
 }
 
 ///////////////////////////////////////////////////////////////////////////////// 
+type Authorization interface {
+	CreateUser(models.Manager) (int, error)
+}
 
 type Services interface {
-
+	Authorization
 }
 
 func NewHandler (services Services) *Handler{
