@@ -15,6 +15,7 @@ type Handler struct{
 ///////////////////////////////////////////////////////////////////////////////// 
 type Authorization interface {
 	CreateUser(models.Manager) (int, error)
+	GenerateToken(managerLogin, password string) (string, error)
 }
 
 type Services interface {

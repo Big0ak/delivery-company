@@ -22,5 +22,14 @@ func (r *AuthSQLServer) CreateUserDB(manager models.Manager) (int, error) {
 	if err := row.Scan(&id); err != nil {
 		return 0, err
 	}
-	return int(id), nil
+	return id, nil
+}
+
+func (r *AuthSQLServer) GetUser(managerLogin, password string) (models.Manager, error) {
+	var user models.Manager
+	query := fmt.Sprintf("SELECT ManagerID FROM %s WHERE ManagerLogin='%s' AND Password='%s'", managerTable, managerLogin, password)
+	row := r.db.QueryRow(query)
+	err := row.Scan(&user.ManagerID)
+
+	return user, err
 }

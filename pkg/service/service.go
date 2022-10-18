@@ -24,6 +24,7 @@ type Service struct {
 ////////////////////////////////////////////////////////////////////
 type AuthorizationDB interface{
 	CreateUserDB(models.Manager) (int, error)
+	GetUser(managerLogin, password string) (models.Manager, error)
 }
 
 type Repository interface{
