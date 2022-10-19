@@ -16,6 +16,7 @@ type Handler struct{
 type Authorization interface {
 	CreateUser(models.Manager) (int, error)
 	GenerateToken(managerLogin, password string) (string, error)
+	ParseToken(token string) (int, error)
 }
 
 type Services interface {
@@ -39,7 +40,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		auth.POST("/sign-in", h.signIn)
 	}
 
-	api := router.Group("/api")
+	api := router.Group("/api", h.managerIdentity)
 	{
 		orders := api.Group("/orders")
 		{
