@@ -8,7 +8,7 @@ type Client struct {
 	Name             string `json:"name" binding:"required"`
 	Surname          string `json:"surname" binding:"required"`
 	Phone            string `json:"phone" binding:"required"`
-	RegistrationDate string `json:"registrationDate" binding:"required"`
+	RegistrationDate string `json:"registrationDate"`
 }
 
 type Manager struct {

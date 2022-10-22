@@ -29,13 +29,13 @@ func NewAuthServise(repo AuthorizationDB) *AuthService {
 	return &AuthService{repo: repo}
 }
 
-func (s *AuthService) CreateUser(manager models.Manager) (int, error) {
+func (s *AuthService) CreateManagr(manager models.Manager) (int, error) {
 	manager.Password = s.generatePasswordHash(manager.Password)
-	return s.repo.CreateUserDB(manager)
+	return s.repo.CreateManagerDB(manager)
 }
 
 func (s *AuthService) GenerateToken(managerLogin, password string) (string, error) {
-	user, err := s.repo.GetUser(managerLogin, s.generatePasswordHash(password))
+	user, err := s.repo.GetManager(managerLogin, s.generatePasswordHash(password))
 	if err != nil {
 		return "", err
 	}

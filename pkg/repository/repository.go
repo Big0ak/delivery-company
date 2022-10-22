@@ -10,9 +10,9 @@ import (
 // 	CreateUserDB(models.Manager) (int, error)
 // }
 
-type OrdersDB interface{
+// type OrdersDB interface{
 
-}
+// }
 
 type RouteDB interface{
 
@@ -20,12 +20,13 @@ type RouteDB interface{
 
 type Repository struct{
 	*AuthSQLServer
-	OrdersDB
+	*OrderDB
 	RouteDB
 }
 
 func NewRepository (db *sql.DB) *Repository{
 	return &Repository{
 		AuthSQLServer: NewAuthQLServer(db),
+		OrderDB: NewOrderDB(db),
 	}
 }

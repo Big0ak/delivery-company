@@ -15,7 +15,7 @@ func NewAuthQLServer(db *sql.DB) *AuthSQLServer {
 	return &AuthSQLServer{db: db}
 }
 
-func (r *AuthSQLServer) CreateUserDB(manager models.Manager) (int, error) {
+func (r *AuthSQLServer) CreateManagerDB(manager models.Manager) (int, error) {
 	var id int
 	query := fmt.Sprintf("INSERT INTO %s (ManagerLogin, Password, Name, Surname) OUTPUT Inserted.ManagerID VALUES ('%s', '%s', '%s', '%s')", managerTable, manager.ManagerLogin, manager.Password, manager.Name, manager.Surname)
 	row := r.db.QueryRow(query)
@@ -25,7 +25,7 @@ func (r *AuthSQLServer) CreateUserDB(manager models.Manager) (int, error) {
 	return id, nil
 }
 
-func (r *AuthSQLServer) GetUser(managerLogin, password string) (models.Manager, error) {
+func (r *AuthSQLServer) GetManager(managerLogin, password string) (models.Manager, error) {
 	var user models.Manager
 	query := fmt.Sprintf("SELECT ManagerID FROM %s WHERE ManagerLogin='%s' AND Password='%s'", managerTable, managerLogin, password)
 	row := r.db.QueryRow(query)

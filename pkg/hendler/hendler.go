@@ -9,19 +9,25 @@ import (
 type Handler struct{
 	//services *service.Service
 	services Services
-
 }
 
 ///////////////////////////////////////////////////////////////////////////////// 
 type Authorization interface {
-	CreateUser(models.Manager) (int, error)
+	CreateManagr(models.Manager) (int, error)
 	GenerateToken(managerLogin, password string) (string, error)
 	ParseToken(token string) (int, error)
 }
 
+type Orders interface {
+	Create(managerId int, order models.Orders) (int, error)
+	GetAll(managerId int) ([]models.Orders, error)
+}
+
 type Services interface {
 	Authorization
+	Orders
 }
+
 
 func NewHandler (services Services) *Handler{
 	return &Handler{services: services}
@@ -44,7 +50,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	{
 		orders := api.Group("/orders")
 		{
-			orders.POST("/", h.createOrders)
+			orders.POST("/", h.createOrdersManager)
 			orders.GET("/", h.getAllOrders)
 			orders.GET("/:id", h.getOrdersById)
 			orders.PUT("/:id", h.updateOrders)

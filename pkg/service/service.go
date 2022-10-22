@@ -8,33 +8,41 @@ import "github.com/Big0ak/delivery-company/models"
 // 	CreateUser(models.Manager) (int, error)
 // }
 
-type Orders interface {
-}
+// type Orders interface {
+// }
 
 type Route interface {
 }
 
 type Service struct {
 	*AuthService
-	Orders
+	*OrderService
 	Route
 	repos Repository
 }
 
 ////////////////////////////////////////////////////////////////////
 type AuthorizationDB interface{
-	CreateUserDB(models.Manager) (int, error)
-	GetUser(managerLogin, password string) (models.Manager, error)
+	CreateManagerDB(models.Manager) (int, error)
+	GetManager(managerLogin, password string) (models.Manager, error)
+}
+
+type OrderDB interface{
+	CreateDB(managerId int, order models.Orders) (int, error)
+	GetAllDB(managerId int) ([]models.Orders, error)
 }
 
 type Repository interface{
 	AuthorizationDB
+	OrderDB
 }
 
-func NewService(repos Repository, AuthDB AuthorizationDB) *Service {
+func NewService(repos Repository, AuthDB AuthorizationDB, OrderDB OrderDB) *Service {
 	return &Service{
 		repos: repos,
-		AuthService: NewAuthServise(AuthDB)} 
+		AuthService: NewAuthServise(AuthDB),
+		OrderService: NewOrderService(OrderDB),
+	} 
 }
 
 // func NewService1(repos *repository.Repository) *Service {

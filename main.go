@@ -36,7 +36,7 @@ func main() {
 	}
 
 	repos := repository.NewRepository(db)
-	services := service.NewService(repos, repos.AuthSQLServer)
+	services := service.NewService(repos, repos.AuthSQLServer, repos.OrderDB)
 	handlers := handler.NewHandler(services)
 	//handlers := new(handler.Handler)
 
