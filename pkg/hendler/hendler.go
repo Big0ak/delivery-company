@@ -13,14 +13,17 @@ type Handler struct{
 
 ///////////////////////////////////////////////////////////////////////////////// 
 type Authorization interface {
-	CreateManagr(models.Manager) (int, error)
+	CreateNewManager(models.Manager) (int, error)
 	GenerateToken(managerLogin, password string) (string, error)
 	ParseToken(token string) (int, error)
 }
 
 type Orders interface {
-	Create(managerId int, order models.Orders) (int, error)
+	CreateManager(managerId int, order models.Orders) (int, error)
 	GetAll(managerId int) ([]models.Orders, error)
+	GetByIdManager(managerid, id int) (models.Orders, error)
+	DeleteManager(managerid, id int) error
+	UpdateManager(managerid, id int, input models.Orders) error
 }
 
 type Services interface {
@@ -54,7 +57,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			orders.GET("/", h.getAllOrders)
 			orders.GET("/:id", h.getOrdersById)
 			orders.PUT("/:id", h.updateOrders)
-			orders.DELETE("/:id", h.deleteOrders)
+			orders.DELETE("/:id", h.deleteOrdersManager)
 		}
 		
 		route := api.Group("/route")

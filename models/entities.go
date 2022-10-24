@@ -1,13 +1,15 @@
 package models
 
+import "database/sql"
+
 type Auto struct {
-	AutoId      int    `json:"id"`
-	DriverID    int    `json:"driverId"`
-	Model       string `json:"model" binding:"required"`
-	Number      string `json:"number" binding:"required"`
-	Capacity    int    `json:"capacity" binding:"required"`
-	Description string `json:"description"`
-	YearRelease int    `json:"yearRelease" binding:"required"`
+	AutoId      sql.NullInt64  `json:"id"`
+	DriverID    int            `json:"driverId"`
+	Model       string         `json:"model" binding:"required"`
+	Number      string         `json:"number" binding:"required"`
+	Capacity    int            `json:"capacity" binding:"required"`
+	Description sql.NullString `json:"description"`
+	YearRelease int            `json:"yearRelease" binding:"required"`
 }
 
 type Driver struct {
@@ -24,12 +26,22 @@ type Route struct {
 }
 
 type Orders struct {
-	OrderID     int    `json:"id"`
-	ClientID    int    `json:"clientId" binding:"required"`
-	RouteID     int    `json:"routeId" binding:"required"`
-	DriverID    int    `json:"driverid" binding:"required"`
-	ManagerID   int    `json:"managerId"`
-	CargoWeight int    `json:"cargoWeight" binding:"required"`
-	Price       uint   `json:"price" binding:"required"`
-	Date        string `json:"date"`
+	OrderID     int           `json:"id"`
+	ClientID    int           `json:"clientId" binding:"required"`
+	RouteID     int           `json:"routeId" binding:"required"`
+	DriverID    int           `json:"driverid" binding:"required"`
+	ManagerID   sql.NullInt64 `json:"managerId"`
+	CargoWeight int           `json:"cargoWeight" binding:"required"`
+	Price       uint          `json:"price" binding:"required"`
+	Date        string        `json:"date"`
 }
+
+// type UpdateOrders struct {
+// 	ClientId    *int    `json:"id"`
+// 	RouteID     *int    `json:"routeId"`
+// 	DriverID    *int    `json:"driverid"`
+// 	ManagerID   *int    `json:"managerId"`
+// 	CargoWeight *int    `json:"cargoWeight"`
+// 	Price       *uint   `json:"price"`
+// 	Date        *string `json:"date"`
+// }

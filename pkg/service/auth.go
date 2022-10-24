@@ -29,9 +29,9 @@ func NewAuthServise(repo AuthorizationDB) *AuthService {
 	return &AuthService{repo: repo}
 }
 
-func (s *AuthService) CreateManagr(manager models.Manager) (int, error) {
+func (s *AuthService) CreateNewManager(manager models.Manager) (int, error) {
 	manager.Password = s.generatePasswordHash(manager.Password)
-	return s.repo.CreateManagerDB(manager)
+	return s.repo.CreateNewManagerDB(manager)
 }
 
 func (s *AuthService) GenerateToken(managerLogin, password string) (string, error) {

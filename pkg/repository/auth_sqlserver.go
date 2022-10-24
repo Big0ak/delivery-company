@@ -15,7 +15,7 @@ func NewAuthQLServer(db *sql.DB) *AuthSQLServer {
 	return &AuthSQLServer{db: db}
 }
 
-func (r *AuthSQLServer) CreateManagerDB(manager models.Manager) (int, error) {
+func (r *AuthSQLServer) CreateNewManagerDB(manager models.Manager) (int, error) {
 	var id int
 	query := fmt.Sprintf("INSERT INTO %s (ManagerLogin, Password, Name, Surname) OUTPUT Inserted.ManagerID VALUES ('%s', '%s', '%s', '%s')", managerTable, manager.ManagerLogin, manager.Password, manager.Name, manager.Surname)
 	row := r.db.QueryRow(query)

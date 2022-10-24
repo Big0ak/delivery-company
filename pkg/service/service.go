@@ -23,13 +23,16 @@ type Service struct {
 
 ////////////////////////////////////////////////////////////////////
 type AuthorizationDB interface{
-	CreateManagerDB(models.Manager) (int, error)
+	CreateNewManagerDB(models.Manager) (int, error)
 	GetManager(managerLogin, password string) (models.Manager, error)
 }
 
 type OrderDB interface{
-	CreateDB(managerId int, order models.Orders) (int, error)
+	CreateManagerDB(managerId int, order models.Orders) (int, error)
 	GetAllDB(managerId int) ([]models.Orders, error)
+	GetByIdManagerDB(managerid, id int) (models.Orders, error)
+	DeleteManagerDB(managerid, id int) error
+	UpdateManagerDB(managerid, id int, input models.Orders) error 
 }
 
 type Repository interface{
