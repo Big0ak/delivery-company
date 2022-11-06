@@ -1,31 +1,29 @@
-import {SyntheticEvent, useState} from 'react'
+import {FC, SyntheticEvent, useState} from 'react'
 import {Form, Button} from 'react-bootstrap'
 import FormContainer from '../components/FormContainer'
-import { useNavigate } from "react-router-dom";
+import { IManager } from '../axios/interfaces';
+import { sendPostManager } from '../axios/hooks';
+import { useNavigate } from 'react-router-dom';
 
-
-const SignupScreen = () => {
+const SignupScreen: FC = () => {
 
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [login, setLogin] = useState('')
   const [password, setPassword] = useState('')
+  const navigate = useNavigate()
 
-  const submitHandler = async(e: SyntheticEvent) => {
+  const submitHandler = async (e: SyntheticEvent) => {
     e.preventDefault()
+    const body: IManager = {
+      name: firstName,
+      surname: lastName,
+      login: login,
+      password: password, 
+    }
+    await sendPostManager("auth/sign-up", body)
 
-    //связь с backend
-    await fetch('http://localhost:8000/auth/sign-up', {
-      mode: 'no-cors',
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: firstName,
-        surname: lastName,
-        login,
-        password
-      })
-    })
+    navigate('/login')
   }
 
   return (

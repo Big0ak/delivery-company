@@ -1,32 +1,24 @@
-import {SyntheticEvent, useState} from 'react'
+import {FC, SyntheticEvent, useState} from 'react'
 import {Form, Button} from 'react-bootstrap'
 import FormContainer from '../components/FormContainer'
+import { ILoginUser } from '../axios/interfaces';
+import { sendSignInManager } from '../axios/hooks';
 
-const LoginScreen = () => {
+const LoginScreen: FC = () => {
 
   const [login, setLogin] = useState('')
   const [password, setPassword] = useState('')
 
   const submitHandler = async(e: SyntheticEvent) => { // тип события
     e.preventDefault()
-    
-    await fetch('http://localhost:8000/auth/sign-in', {
-      mode: 'no-cors',
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({
-        login,
-        password
-      })
-    }).then(response => {
-      const result = response.json()
-      return result;
-    }).then(data => {
-      console.log(data);
-    }).catch(err => {
-      console.log(err)
-    })
+    const body: ILoginUser = {
+      login: login,
+      password: password, 
+    }
+    const token = await sendSignInManager("auth/sign-in", body)
+    if (token !== null){  
+      localStorage.setItem('JWT', token.token)
+    }
   }
 
   return (

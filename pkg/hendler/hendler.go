@@ -4,6 +4,7 @@ import (
 	"github.com/Big0ak/delivery-company/models"
 	"github.com/gin-gonic/gin"
 	//"github.com/Big0ak/DeliveryCompany/pkg/service"
+	"github.com/gin-contrib/cors"
 )
 
 type Handler struct{
@@ -42,6 +43,13 @@ func NewHandler (services Services) *Handler{
 ///////////////////////////////////////////////////////////////////////////////////
 func (h *Handler) InitRoutes() *gin.Engine {
 	router := gin.New()
+
+	router.Use(cors.New(cors.Config{
+		AllowOrigins: []string{"*"},
+		AllowMethods: []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"},
+		AllowHeaders: []string{"Origin, X-Requested-With, Content-Type, Accept, Authorization"},
+		AllowCredentials: true,
+	}))
 
 	auth := router.Group("/auth")
 	{
