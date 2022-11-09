@@ -22,6 +22,7 @@ const Header = () => {
             ) : (
               <Nav className="ms-auto">
                 <Nav.Link href="/orders">Список заказов</Nav.Link>
+                <Nav.Link href="/creat-order">Создать заказ</Nav.Link> 
                 <Nav.Link onClick={logoutHandler} href="/">Выйти</Nav.Link>
               </Nav>
             )

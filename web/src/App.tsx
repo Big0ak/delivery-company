@@ -6,6 +6,9 @@ import {BrowserRouter, Routes, Route} from "react-router-dom"
 import HomeScreen from './screens/HomeScreen';
 import LoginScreen from './screens/LoginScreen';
 import SignupScreen from './screens/SignupScreen';
+import OrdersManagerScreen from './screens/OrdersManagerScreen';
+import OrderCreationScreen from './screens/OrderCreationScreen';
+import React from 'react';
 
 function App() {
   return (
@@ -16,7 +19,14 @@ function App() {
         <Routes>
           <Route path='/' element={<HomeScreen />} />
           <Route path='/signup' element={<SignupScreen />} />
-          <Route path='/login' element={<LoginScreen />} />   
+          <Route path='/login' element={<LoginScreen />} />
+          {localStorage.getItem("JWT") && (
+              <React.Fragment>
+                <Route path='/orders' element={<OrdersManagerScreen /> }/>
+                <Route path='/creat-order' element={<OrderCreationScreen /> }/>
+              </React.Fragment>
+              //<Route path='/orders/:id' element={<OrderItemScreen /> }/>
+          )}
         </Routes>
        </Container>
       </main>

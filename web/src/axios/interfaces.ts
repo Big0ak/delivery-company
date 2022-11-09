@@ -11,12 +11,12 @@ export interface ILoginUser {
 }
 
 export interface IOrder {
-    id: number;
+    id?: number | null;
     clientId: number;
     routeId: number;
     driverid: number;
-    managerId?: number;
+    managerId?: number | null;
     cargoWeight: number;
     price: number;
-    date: string;
+    date?: string | null;
 }

@@ -3,12 +3,15 @@ import {Form, Button} from 'react-bootstrap'
 import FormContainer from '../components/FormContainer'
 import { ILoginUser } from '../axios/interfaces';
 import { sendSignInManager } from '../axios/hooks';
+import { roles } from '../constants';
+import { useNavigate } from 'react-router-dom';
 
 const LoginScreen: FC = () => {
 
   const [login, setLogin] = useState('')
   const [password, setPassword] = useState('')
-
+  const navigate = useNavigate()
+  
   const submitHandler = async(e: SyntheticEvent) => { // тип события
     e.preventDefault()
     const body: ILoginUser = {
@@ -18,7 +21,10 @@ const LoginScreen: FC = () => {
     const token = await sendSignInManager("auth/sign-in", body)
     if (token !== null){  
       localStorage.setItem('JWT', token.token)
+      localStorage.setItem('role', roles.manager)
     }
+
+    navigate('/')
   }
 
   return (
