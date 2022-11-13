@@ -11,6 +11,7 @@ import (
 const (
 	autharizationHeader = "Authorization"
 	managerCtx          = "managerId"
+	clientCtx			= "clientId"
 )
 
 // получать значение из header авторизации, валидировать его,
@@ -24,12 +25,12 @@ func (h *Handler) managerIdentity(c *gin.Context) {
 
 	headerParts := strings.Split(header, " ")
 	if len(headerParts) != 2 {
-		newErrorResponse(c, http.StatusUnauthorized, "invalid auth header") // 401 пользователь не авторизирован
+		newErrorResponse(c, http.StatusUnauthorized, "invalid auth header") // 401 менеджер не авторизирован
 		return
 	}
 
 	// парсинг токена
-	managerId, err := h.services.ParseToken(headerParts[1])
+	managerId, err := h.services.ParseTokenManager(headerParts[1])
 	if err != nil {
 		newErrorResponse(c, http.StatusUnauthorized, err.Error())
 		return
@@ -39,6 +40,29 @@ func (h *Handler) managerIdentity(c *gin.Context) {
 	// чтобы иметь доступ к id пользователя который делает запрос в последующих обработчиках
 	// которые вызываются после данной прослойки
 	c.Set(managerCtx, managerId)
+}
+
+func (h *Handler)clientIdentity(c *gin.Context){
+	header:= c.GetHeader(autharizationHeader)
+	if header == "" {
+		newErrorResponse(c, http.StatusUnauthorized, "empty auth header")
+		return
+	}
+
+	headerParts := strings.Split(header, " ")
+	if len(headerParts) != 2 {
+		newErrorResponse(c, http.StatusUnauthorized, "invalid auth header") // 401 клиент не авторизирован
+		return
+	}
+
+	// парсинг токена
+	clientId, err := h.services.ParseTokenClient(headerParts[1])
+	if err != nil {
+		newErrorResponse(c, http.StatusUnauthorized, err.Error())
+		return
+	}
+
+	c.Set(clientCtx, clientId)
 }
 
 // получение Id пользователя, чтобы каждый раз не прописывать

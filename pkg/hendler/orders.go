@@ -124,3 +124,7 @@ func (h *Handler) deleteOrdersManager(c *gin.Context){
 		Status: "ok",
 	})
 }
+
+func (h *Handler) getUserOrder (c *gin.Context){
+
+}

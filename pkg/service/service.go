@@ -11,13 +11,10 @@ import "github.com/Big0ak/delivery-company/models"
 // type Orders interface {
 // }
 
-type Route interface {
-}
 
 type Service struct {
 	*AuthService
 	*OrderService
-	Route
 	repos Repository
 }
 
@@ -25,6 +22,9 @@ type Service struct {
 type AuthorizationDB interface{
 	CreateNewManagerDB(models.Manager) (int, error)
 	GetManager(managerLogin, password string) (models.Manager, error)
+	
+	CreateNewClientDB(models.Client) (int, error)
+	GetClient(clientLogin, password string) (models.Client, error)
 }
 
 type OrderDB interface{

@@ -15,8 +15,12 @@ type Handler struct{
 ///////////////////////////////////////////////////////////////////////////////// 
 type Authorization interface {
 	CreateNewManager(models.Manager) (int, error)
-	GenerateToken(managerLogin, password string) (string, error)
-	ParseToken(token string) (int, error)
+	GenerateTokenManager(managerLogin, password string) (string, error)
+	ParseTokenManager(token string) (int, error)
+	
+	CreateNewClient(models.Client) (int, error)
+	GenerateTokenClient(managerLogin, password string) (string, error)
+	ParseTokenClient(token string) (int, error)
 }
 
 type Orders interface {
@@ -31,7 +35,6 @@ type Services interface {
 	Authorization
 	Orders
 }
-
 
 func NewHandler (services Services) *Handler{
 	return &Handler{services: services}
@@ -53,13 +56,18 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 	auth := router.Group("/auth")
 	{
+		// регистрация и авторизация менеджера
 		auth.POST("/sign-up", h.signUp)
 		auth.POST("/sign-in", h.signIn)
+
+		// регистрация и авторизация пользователя
+		auth.POST("/client-sign-up", h.clientSignUp)
+		auth.POST("/client-sign-in", h.clientSignIn)
 	}
 
-	api := router.Group("/api", h.managerIdentity)
+	manager := router.Group("/manager-api", h.managerIdentity)
 	{
-		orders := api.Group("/orders")
+		orders := manager.Group("/orders")
 		{
 			orders.POST("/", h.createOrdersManager)
 			orders.GET("/", h.getAllOrders)
@@ -67,15 +75,15 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			orders.PUT("/:id", h.updateOrders)
 			orders.DELETE("/:id", h.deleteOrdersManager)
 		}
-		
-		route := api.Group("/route")
+	}
+
+	user := router.Group("/client-api", h.clientIdentity)
+	{
+		orders := user.Group("/orders")
 		{
-			route.POST("/", h.createRoute)
-			route.GET("/", h.getAllRoute)
-			route.GET("/:id", h.getRouteById)
-			route.PUT("/:id", h.updateRoute)
-			route.DELETE("/:id", h.deleteRoute)
+			orders.GET("/", h.getUserOrder)
 		}
 	}
+
 	return router
 }

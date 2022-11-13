@@ -14,22 +14,22 @@ function App() {
   return (
     <BrowserRouter>
       <Header />
-      <main>
-       <Container>
-        <Routes>
-          <Route path='/' element={<HomeScreen />} />
-          <Route path='/signup' element={<SignupScreen />} />
-          <Route path='/login' element={<LoginScreen />} />
-          {localStorage.getItem("JWT") && (
-              <React.Fragment>
-                <Route path='/orders' element={<OrdersManagerScreen /> }/>
-                <Route path='/creat-order' element={<OrderCreationScreen /> }/>
-              </React.Fragment>
-              //<Route path='/orders/:id' element={<OrderItemScreen /> }/>
-          )}
-        </Routes>
-       </Container>
-      </main>
+        <main>
+        <Container>
+          <Routes>
+            <Route path='/' element={<HomeScreen />} />
+            <Route path='/signup' element={<SignupScreen />} />
+            <Route path='/login' element={<LoginScreen />} />
+            {localStorage.getItem("JWT") && (
+                <React.Fragment>
+                  <Route path='/orders' element={<OrdersManagerScreen /> }/>
+                  <Route path='/creat-order' element={<OrderCreationScreen /> }/>
+                </React.Fragment>
+                //<Route path='/orders/:id' element={<OrderItemScreen /> }/>
+            )}
+          </Routes>
+        </Container>
+        </main>
       <Footer/>
     </BrowserRouter>
   );

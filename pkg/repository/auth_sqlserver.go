@@ -25,11 +25,31 @@ func (r *AuthSQLServer) CreateNewManagerDB(manager models.Manager) (int, error) 
 	return id, nil
 }
 
+func (r *AuthSQLServer) CreateNewClientDB(client models.Client) (int, error) {
+	var id int
+	query := fmt.Sprintf("INSERT INTO %s (UserLogin, Password, Name, Surname, Phone) OUTPUT Inserted.ClientID VALUES ('%s', '%s', '%s', '%s', '%s')",
+		clientTable, client.UserLogin, client.Password, client.Name, client.Surname, client.Phone)
+	row := r.db.QueryRow(query)
+	if err := row.Scan(&id); err != nil {
+		return 0, err
+	}
+	return id, nil
+}
+
 func (r *AuthSQLServer) GetManager(managerLogin, password string) (models.Manager, error) {
-	var user models.Manager
+	var manager models.Manager
 	query := fmt.Sprintf("SELECT ManagerID FROM %s WHERE ManagerLogin='%s' AND Password='%s'", managerTable, managerLogin, password)
 	row := r.db.QueryRow(query)
-	err := row.Scan(&user.ManagerID)
+	err := row.Scan(&manager.ManagerID)
 
-	return user, err
+	return manager, err
+}
+
+func (r *AuthSQLServer) GetClient(clientLogin, password string) (models.Client, error) {
+	var client models.Client
+	query := fmt.Sprintf("SELECT ClientID FROM %s WHERE UserLogin='%s' AND Password='%s'", clientTable, clientLogin, password)
+	row := r.db.QueryRow(query)
+	err := row.Scan(&client.ClientID)
+
+	return client, err
 }

@@ -54,7 +54,7 @@ export const getAllOrders = async (url: string) => {
 
 export const getOrderId = async (url: string, id: string) => {
     try{
-        const response = await AxiosInstance.get<IOrder>(url+`/${id}`,
+        const response = await AxiosInstance.get(url+`/${id}`,
             {
                 headers: {
                     Accept: 'application/json',

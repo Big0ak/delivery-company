@@ -14,14 +14,9 @@ import (
 
 // }
 
-type RouteDB interface{
-
-}
-
 type Repository struct{
 	*AuthSQLServer
 	*OrderDB
-	RouteDB
 }
 
 func NewRepository (db *sql.DB) *Repository{
