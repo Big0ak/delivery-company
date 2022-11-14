@@ -14,11 +14,11 @@ func (s *OrderService) CreateManager(managerId int, order models.Orders) (int, e
 	return s.repo.CreateManagerDB(managerId, order)
 }
 
-func (s *OrderService) GetAll(managerId int) ([]models.Orders, error) {
+func (s *OrderService) GetAll(managerId int) ([]models.OrdersRead, error) {
 	return s.repo.GetAllDB(managerId)
 }
 
-func (s *OrderService) GetByIdManager(managerid, id int) (models.Orders, error) {
+func (s *OrderService) GetByIdManager(managerid, id int) (models.OrdersRead, error) {
 	return s.repo.GetByIdManagerDB(managerid, id)
 }
 

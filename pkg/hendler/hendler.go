@@ -25,15 +25,20 @@ type Authorization interface {
 
 type Orders interface {
 	CreateManager(managerId int, order models.Orders) (int, error)
-	GetAll(managerId int) ([]models.Orders, error)
-	GetByIdManager(managerid, id int) (models.Orders, error)
-	DeleteManager(managerid, id int) error
-	UpdateManager(managerid, id int, input models.Orders) error
+	GetAll(managerId int) ([]models.OrdersRead, error)
+	GetByIdManager(managerId, id int) (models.OrdersRead, error)
+	DeleteManager(managerId, id int) error
+	UpdateManager(managerId, id int, input models.Orders) error
+}
+
+type Client interface {
+	GetAllClient(managerId int) ([]models.Client, error)
 }
 
 type Services interface {
 	Authorization
 	Orders
+	Client
 }
 
 func NewHandler (services Services) *Handler{
@@ -75,6 +80,11 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			orders.PUT("/:id", h.updateOrders)
 			orders.DELETE("/:id", h.deleteOrdersManager)
 		}
+
+		client := manager.Group("/client")
+		{
+			client.GET("/", h.getAllClient)
+		}
 	}
 
 	user := router.Group("/client-api", h.clientIdentity)
@@ -82,6 +92,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		orders := user.Group("/orders")
 		{
 			orders.GET("/", h.getUserOrder)
+			orders.GET("/:id", h.getOrdersById)
 		}
 	}
 

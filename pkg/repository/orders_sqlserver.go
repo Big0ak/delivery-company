@@ -18,8 +18,8 @@ func NewOrderDB(db *sql.DB) *OrderDB {
 
 func (r *OrderDB) CreateManagerDB(managerId int, order models.Orders) (int, error) {
 	var id int
-	creatOrder := fmt.Sprintf("INSERT INTO %s (ClientID, RouteID, DriverID, ManagerID, CargoWeight, Price) OUTPUT Inserted.OrderID VALUES('%d', '%d', '%d', '%d','%d', '%d')",
-		ordersTable, order.ClientID, order.RouteID, order.DriverID, managerId, order.CargoWeight, order.Price)
+	creatOrder := fmt.Sprintf("INSERT INTO %s (ClientID, DriverID, ManagerID, CargoWeight, Price, Departure, Destination) OUTPUT Inserted.OrderID VALUES('%d', '%d', '%d', '%d','%d', '%s', '%s')",
+		ordersTable, order.ClientID, order.DriverID, managerId, order.CargoWeight, order.Price, order.Departure, order.Destination)
 	row := r.db.QueryRow(creatOrder)
 	if err := row.Scan(&id); err != nil {
 		return 0, err
@@ -28,19 +28,27 @@ func (r *OrderDB) CreateManagerDB(managerId int, order models.Orders) (int, erro
 	return id, nil
 }
 
-func (r *OrderDB) GetAllDB(managerId int) ([]models.Orders, error) {
-	var orders []models.Orders
-	query := fmt.Sprintf("SELECT * FROM %s", ordersTable)
+func (r *OrderDB) GetAllDB(managerId int) ([]models.OrdersRead, error) {
+	var orders []models.OrdersRead
+	query := fmt.Sprintf(`SELECT o.OrderID, c.Name + ' ' + c.Surname as 'Client', ` +
+							`d.Name + ' ' + d.Surname as 'Driver', ` +
+							`m.Name + ' ' + m.Surname as 'Manager', ` +
+							`o.CargoWeight, o.Price, o.Departure, o.Destination, o.Date FROM %s o ` +
+								`JOIN %s c ON o.ClientID = c.ClientID ` +
+								`JOIN %s d ON o.DriverID = d.DriverID ` +
+								`LEFT JOIN %s m ON o.ManagerID = m.ManagerID `,
+								 	ordersTable, clientTable, driverTable, managerTable)
+
 	rows, err := r.db.Query(query)
 	if err != nil {
 		return nil, err
 	}
 
 	for rows.Next() {
-		o := models.Orders{}
+		o := models.OrdersRead{}
 		var price []uint8
 		err := rows.Scan(
-			&o.OrderID, &o.ClientID, &o.RouteID, &o.DriverID, &o.ManagerID, &o.CargoWeight, &price, &o.Date)
+			&o.OrderID, &o.Client, &o.Driver, &o.Manager, &o.CargoWeight, &price, &o.Departure, &o.Destination, &o.Date)
 		if err != nil {
 			return nil, err
 		}
@@ -51,14 +59,21 @@ func (r *OrderDB) GetAllDB(managerId int) ([]models.Orders, error) {
 	return orders, nil
 }
  
-func (r *OrderDB) GetByIdManagerDB(managerid, id int) (models.Orders, error) {
-	var order models.Orders
-	query := fmt.Sprintf("SELECT * FROM %s as od where od.OrderID = %d", ordersTable, id)
+func (r *OrderDB) GetByIdManagerDB(managerid, id int) (models.OrdersRead, error) {
+	var order models.OrdersRead
+	query := fmt.Sprintf(`SELECT o.OrderID, c.Name + ' ' + c.Surname as 'Client', ` +
+							`d.Name + ' ' + d.Surname as 'Driver', ` +
+							`m.Name + ' ' + m.Surname as 'Manager', ` +
+							`o.CargoWeight, o.Price, o.Departure, o.Destination, o.Date FROM (SELECT * FROM %s od WHERE od.OrderID = %d) o ` +
+								`JOIN %s c ON o.ClientID = c.ClientID ` +
+								`JOIN %s d ON o.DriverID = d.DriverID ` +
+								`LEFT JOIN %s m ON o.ManagerID = m.ManagerID `,
+								 	ordersTable, id, clientTable, driverTable, managerTable)
 	row := r.db.QueryRow(query)
 	var price []uint8
-	err := row.Scan(&order.OrderID, &order.ClientID, &order.RouteID, &order.DriverID, &order.ManagerID, &order.CargoWeight, &price, &order.Date)
+	err := row.Scan(&order.OrderID, &order.Client, &order.Driver, &order.Manager, &order.CargoWeight, &price, &order.Departure, &order.Destination, &order.Date)
 	if err != nil {
-		return models.Orders{}, err
+		return models.OrdersRead{}, err
 	}
 	order.Price = ConvertPriceToUint(price[:])
 	return order, nil
@@ -73,9 +88,9 @@ func (r *OrderDB) DeleteManagerDB(managerid, id int) error {
 
 	
 func (r *OrderDB) UpdateManagerDB(managerid, id int, input models.Orders) error {
-	query := fmt.Sprintf("UPDATE %s SET ClientID = %d, RouteID = %d, DriverID = %d, ManagerID = %d, CargoWeight = %d, Price = %d WHERE OrderID = %d",
-		ordersTable, input.ClientID, input.RouteID, input.DriverID,
-		managerid, input.CargoWeight, input.Price, id)
+	query := fmt.Sprintf("UPDATE %s SET ClientID = %d, DriverID = %d, ManagerID = %d, CargoWeight = %d, Price = %d, Departure = '%s', Destination = '%s' WHERE OrderID = %d",
+		ordersTable, input.ClientID, input.DriverID,
+		managerid, input.CargoWeight, input.Price, input.Departure, input.Destination, id)
 	_, err := r.db.Exec(query)
 	return err
 }

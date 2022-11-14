@@ -18,30 +18,26 @@ type Driver struct {
 	Surname  string `json:"surname" binding:"required"`
 }
 
-type Route struct {
-	RouteID     int    `json:"id"`
-	Departure   string `json:"departure" binding:"required"`
-	Destination string `json:"destination" binding:"required"`
-	Distance    int    `json:"distance" binding:"required"`
-}
-
 type Orders struct {
 	OrderID     int           `json:"id"`
 	ClientID    int           `json:"clientId" binding:"required"`
-	RouteID     int           `json:"routeId" binding:"required"`
 	DriverID    int           `json:"driverid" binding:"required"`
 	ManagerID   sql.NullInt64 `json:"managerId"`
 	CargoWeight int           `json:"cargoWeight" binding:"required"`
 	Price       uint          `json:"price" binding:"required"`
+	Departure   string        `json:"departure" binding:"required"`
+	Destination string        `json:"destination" binding:"required"`
 	Date        string        `json:"date"`
 }
 
-// type UpdateOrders struct {
-// 	ClientId    *int    `json:"id"`
-// 	RouteID     *int    `json:"routeId"`
-// 	DriverID    *int    `json:"driverid"`
-// 	ManagerID   *int    `json:"managerId"`
-// 	CargoWeight *int    `json:"cargoWeight"`
-// 	Price       *uint   `json:"price"`
-// 	Date        *string `json:"date"`
-// }
+type OrdersRead struct {
+	OrderID     int            `json:"id"`
+	Client      string         `json:"client" binding:"required"`
+	Driver      string         `json:"driver" binding:"required"`
+	Manager     sql.NullString `json:"manager" binding:"required"`
+	CargoWeight int            `json:"cargoWeight" binding:"required"`
+	Price       uint           `json:"price" binding:"required"`
+	Departure   string         `json:"departure" binding:"required"`
+	Destination string         `json:"destination" binding:"required"`
+	Date        string         `json:"date"`
+}

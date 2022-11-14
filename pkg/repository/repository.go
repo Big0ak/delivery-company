@@ -17,11 +17,13 @@ import (
 type Repository struct{
 	*AuthSQLServer
 	*OrderDB
+	*ClientDB
 }
 
 func NewRepository (db *sql.DB) *Repository{
 	return &Repository{
 		AuthSQLServer: NewAuthQLServer(db),
 		OrderDB: NewOrderDB(db),
+		ClientDB: NewClientDB(db),
 	}
 }

@@ -32,16 +32,16 @@ func (h *Handler) createOrdersManager(c *gin.Context){
 }
 
 type getAllOrdersResponse struct {
-	Data[] models.Orders `json:"data"`
+	Data[] models.OrdersRead `json:"data"`
 }
 
 func (h *Handler) getAllOrders(c *gin.Context){
-	managerid, err := getManagerId(c)
+	managerId, err := getManagerId(c)
 	if err != nil {
 		return
 	}
 
-	listOrsers, err := h.services.GetAll(managerid)
+	listOrsers, err := h.services.GetAll(managerId)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
