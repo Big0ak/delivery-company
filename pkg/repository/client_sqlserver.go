@@ -18,14 +18,14 @@ func NewClientDB(db *sql.DB) *ClientDB{
 func (r *ClientDB) GetAllClientDB(managerId int) ([]models.Client, error) {
 	var client []models.Client
 	query := fmt.Sprintf("SELECT c.ClientID, c.UserLogin, c.Name, c.Surname, c.Phone, c.RegistrationDate FROM %s c", clientTable)
-	row, err := r.db.Query(query)
+	rows, err := r.db.Query(query)
 	if err != nil {
 		return nil, err
 	}
 
-	for row.Next(){
+	for rows.Next(){
 		c := models.Client{}
-		err = row.Scan(&c.ClientID, &c.UserLogin, &c.Name, &c.Surname, &c.Phone, &c.RegistrationDate)
+		err = rows.Scan(&c.ClientID, &c.UserLogin, &c.Name, &c.Surname, &c.Phone, &c.RegistrationDate)
 		if err != nil {
 			return nil, err
 		}

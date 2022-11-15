@@ -29,3 +29,11 @@ func (s *OrderService) DeleteManager(managerid, id int) error {
 func (s *OrderService) UpdateManager(managerid, id int, input models.Orders) error {
 	return s.repo.UpdateManagerDB(managerid, id, input)
 }
+
+func (s *OrderService) GetUserOrder(clientId int) ([]models.OrdersRead, error) {
+	return s.repo.GetUserOrderDB(clientId)
+}
+
+func (s *OrderService) SearchOrdersByCity(managerId int, city string) ([]models.OrdersRead, error) {
+	return s.repo.SearchOrdersByCityDB(managerId, city)
+}

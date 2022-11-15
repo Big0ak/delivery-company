@@ -5,7 +5,7 @@ import (
 	"os"
 
 	api "github.com/Big0ak/delivery-company/api"
-	handler "github.com/Big0ak/delivery-company/pkg/hendler"
+	handler "github.com/Big0ak/delivery-company/pkg/handler"
 	"github.com/Big0ak/delivery-company/pkg/repository"
 	"github.com/Big0ak/delivery-company/pkg/service"
 	"github.com/joho/godotenv"
@@ -36,7 +36,7 @@ func main() {
 	}
 
 	repos := repository.NewRepository(db)
-	services := service.NewService(repos, repos.AuthSQLServer, repos.OrderDB, repos.ClientDB)
+	services := service.NewService(repos, repos.AuthSQLServer, repos.OrderDB, repos.ClientDB, repos.DriverDB)
 	handlers := handler.NewHandler(services)
 	//handlers := new(handler.Handler)
 

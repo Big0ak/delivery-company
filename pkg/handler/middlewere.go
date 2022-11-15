@@ -65,7 +65,7 @@ func (h *Handler)clientIdentity(c *gin.Context){
 	c.Set(clientCtx, clientId)
 }
 
-// получение Id пользователя, чтобы каждый раз не прописывать
+// получение Id менеджера, чтобы каждый раз не прописывать
 func getManagerId(c *gin.Context) (int, error) {
 	id, ok := c.Get(managerCtx)
 	if !ok {
@@ -77,6 +77,21 @@ func getManagerId(c *gin.Context) (int, error) {
 	if !ok {
 		newErrorResponse(c, http.StatusInternalServerError, "manager Id is of invalid type")
 		return 0, errors.New("manager Id is of invalid type")
+	}
+	return idInt, nil
+}
+
+func getClientId(c *gin.Context) (int, error) {
+	id, ok := c.Get(clientCtx)
+	if !ok {
+		newErrorResponse(c, http.StatusInternalServerError, "client Id not found")
+		return 0, errors.New("client Id not found")
+	}
+
+	idInt, ok := id.(int)
+	if !ok {
+		newErrorResponse(c, http.StatusInternalServerError, "client Id is of invalid type")
+		return 0, errors.New("client Id is of invalid type")
 	}
 	return idInt, nil
 }

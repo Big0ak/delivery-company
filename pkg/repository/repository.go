@@ -18,6 +18,7 @@ type Repository struct{
 	*AuthSQLServer
 	*OrderDB
 	*ClientDB
+	*DriverDB
 }
 
 func NewRepository (db *sql.DB) *Repository{
@@ -25,5 +26,6 @@ func NewRepository (db *sql.DB) *Repository{
 		AuthSQLServer: NewAuthQLServer(db),
 		OrderDB: NewOrderDB(db),
 		ClientDB: NewClientDB(db),
+		DriverDB: NewDriverDB(db),
 	}
 }

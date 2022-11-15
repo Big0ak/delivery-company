@@ -31,7 +31,7 @@ func (h *Handler) createOrdersManager(c *gin.Context){
 	})
 }
 
-type getAllOrdersResponse struct {
+type getOrdersResponse struct {
 	Data[] models.OrdersRead `json:"data"`
 }
 
@@ -47,7 +47,7 @@ func (h *Handler) getAllOrders(c *gin.Context){
 		return
 	}
 
-	c.JSON (http.StatusOK, getAllOrdersResponse {
+	c.JSON (http.StatusOK, getOrdersResponse {
 		Data: listOrsers,
 	})
 }
@@ -125,6 +125,39 @@ func (h *Handler) deleteOrdersManager(c *gin.Context){
 	})
 }
 
-func (h *Handler) getUserOrder (c *gin.Context){
+func (h *Handler) searchOrdersByCity(c *gin.Context){
+	managerId, err := getManagerId(c)
+	if err != nil {
+		return
+	}
 
+	city := c.Param("city")
+
+	listOrders, err := h.services.SearchOrdersByCity(managerId, city)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, getOrdersResponse{
+		Data: listOrders,
+	})
+}
+
+// client function 
+func (h *Handler) getUserOrder (c *gin.Context){
+	clientId, err := getClientId(c)
+	if err != nil {
+		return
+	}
+
+	listOrsers, err := h.services.GetUserOrder(clientId)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	
+	c.JSON(http.StatusOK, getOrdersResponse{
+		Data: listOrsers,
+	})
 }

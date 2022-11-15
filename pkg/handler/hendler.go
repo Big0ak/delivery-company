@@ -29,16 +29,24 @@ type Orders interface {
 	GetByIdManager(managerId, id int) (models.OrdersRead, error)
 	DeleteManager(managerId, id int) error
 	UpdateManager(managerId, id int, input models.Orders) error
+	SearchOrdersByCity(managerId int, city string) ([]models.OrdersRead, error)
+
+	GetUserOrder(clientId int) ([]models.OrdersRead, error)
 }
 
 type Client interface {
 	GetAllClient(managerId int) ([]models.Client, error)
 }
 
+type Driver interface {
+	GetAllDriver(managerId int) ([]models.Driver, error)
+}
+
 type Services interface {
 	Authorization
 	Orders
 	Client
+	Driver
 }
 
 func NewHandler (services Services) *Handler{
@@ -79,11 +87,17 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			orders.GET("/:id", h.getOrdersById)
 			orders.PUT("/:id", h.updateOrders)
 			orders.DELETE("/:id", h.deleteOrdersManager)
+			orders.GET("/search/:city", h.searchOrdersByCity)
 		}
 
 		client := manager.Group("/client")
 		{
 			client.GET("/", h.getAllClient)
+		}
+
+		driver := manager.Group("/driver")
+		{
+			driver.GET("/", h.getAllDriver)
 		}
 	}
 
