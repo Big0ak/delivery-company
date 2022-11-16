@@ -2,7 +2,7 @@ package models
 
 // binding:"required" валидация для Gin
 type Client struct {
-	ClientID         int    `json:"-"`
+	ClientID         int    `json:"id"`
 	UserLogin        string `json:"login" binding:"required"`
 	Password         string `json:"password" binding:"required"`
 	Name             string `json:"name" binding:"required"`

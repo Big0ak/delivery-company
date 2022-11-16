@@ -1,12 +1,19 @@
 import React, { useEffect, FC, SyntheticEvent, useState } from 'react'
-import { IClient, IOrder, IDriver } from '../axios/interfaces'
+import { IClient, IOrder, IDriver, IOrderRead } from '../axios/interfaces'
 import {Form, Button} from 'react-bootstrap'
 import FormContainer from '../components/FormContainer'
-import { creatOrder, getAllClient, getAllDriver } from '../axios/hooks';
+import { getAllClient, getAllDriver, getOrderId, editOrder } from '../axios/hooks';
+import {useParams} from "react-router-dom";
+
 
 import Dropdown from 'react-bootstrap/Dropdown';
 
-const OrderCreationScreen: FC = () => {
+
+const OrderEditScreen: FC = () => {
+    const [orderRead, setOrderRead] =useState<IOrderRead>()
+
+  const { Id } = useParams()
+
     const [clients, setClients] = useState<IClient[]>([])
     const [FIOclient, setFIOclient] = useState(" ")
 
@@ -21,7 +28,7 @@ const OrderCreationScreen: FC = () => {
     const [Destination, setDestination] = useState("")
 
     const [Submitted, setSubmitted] = useState(false)
-    const [OrderId, setOrderId] = useState()
+    const [OrderId, setOrderId] = useState('')
 
     useEffect(() => {
       const getClients = async () => {
@@ -33,14 +40,36 @@ const OrderCreationScreen: FC = () => {
         const response = await getAllDriver("manager-api/driver/")
         setDrivers(response)
       }
+
+      const getOrderRead = async () => {
+          const response = await getOrderId("manager-api/orders", OrderId)
+          setOrderRead(response)
+      }
+
+      console.log(Id)
+
       getClients();
       getDrivers();
+      getOrderRead();
+
+      if (orderRead) {
+        setFIOclient(orderRead.client)
+  
+        setFIOdrivers(orderRead.driver)
+  
+        setDeparture(orderRead.departure)
+        setDestination(orderRead.destination)
+        setCargoWeight(orderRead.cargoWeight)
+        setPrice(orderRead.price)
+      }
+      
     }, [])
 
     const submitHandler = async (e: SyntheticEvent) => {
       e.preventDefault()
       
       const body: IOrder = {
+        id: 1, // как получить конкретный id через ссылку
         clientId: CliendID,
         driverId: DriverID,
         cargoWeight: CargoWeight,
@@ -48,20 +77,9 @@ const OrderCreationScreen: FC = () => {
         departure: Departure,
         destination: Destination,
       }
-      const response = await creatOrder("manager-api/orders/", body)
+      await editOrder("manager-api/orders", body)
 
-      setOrderId(response.OrderId)
       setSubmitted(true)
-    }
-    
-    const newOrder = () => {
-      setSubmitted(false)
-      setCliendID(Number)
-      setDeparture("")
-      setDestination("")
-      setDriverID(Number)
-      setCargoWeight(Number)
-      setPrice(Number)
     }
 
   return (
@@ -69,15 +87,12 @@ const OrderCreationScreen: FC = () => {
       {
         Submitted ? (
           <div>
-            <h4>Заказ создан!</h4>
-            <h3>номер заказа #{OrderId}</h3>
-            <Button variant="primary" onClick={newOrder}>
-              Создать заказ
-            </Button>
+            <h4>Заказ изменен!</h4>
+            <h3>номер заказа</h3>
           </div>
         ) : (
             <React.Fragment>
-              <h1>Создание заказа</h1>
+              <h1>Изменение заказа {OrderId} </h1>
               <Form onSubmit={submitHandler}>
 
 
@@ -179,4 +194,4 @@ const OrderCreationScreen: FC = () => {
   )
 }
 
-export default OrderCreationScreen
+export default OrderEditScreen

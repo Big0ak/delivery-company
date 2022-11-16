@@ -52,6 +52,57 @@ export const getAllOrders = async (url: string) => {
     }
 }
 
+export const getAllClient = async (url: string) => {
+    try {
+        const response = await AxiosInstance.get(url,
+            {
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    Authorization: 'Bearer ' + localStorage.getItem("JWT")
+                }
+            })
+
+        return response.data.data
+    } catch (error) {
+        console.error()
+    }
+}
+
+export const getAllDriver = async (url: string) => {
+    try {
+        const response = await AxiosInstance.get(url,
+            {
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    Authorization: 'Bearer ' + localStorage.getItem("JWT")
+                }
+            })
+
+        return response.data.data
+    } catch (error) {
+        console.error()
+    }
+}
+
+export const searchOrderByCity = async (url: string, city: string) => {
+    try {
+        const response = await AxiosInstance.get(url+`/${city}`,
+            {
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    Authorization: 'Bearer ' + localStorage.getItem("JWT")
+                }
+            })
+
+        return response.data.data
+    } catch (error) {
+        console.error()
+    }
+}
+
 export const getOrderId = async (url: string, id: string) => {
     try{
         const response = await AxiosInstance.get(url+`/${id}`,
@@ -71,17 +122,33 @@ export const getOrderId = async (url: string, id: string) => {
 export const creatOrder = async (url: string, body: IOrder) => {
     try {
         const response = await AxiosInstance.post(
-                url,
-                body,
-                {
-                    headers: {
-                        Accept: 'application/json',
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + localStorage.getItem("JWT")
-                    }
+            url,
+            body,
+            {
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem("JWT")
                 }
-            );
+            }
+        );
         return response.data
+    } catch (error) {
+        console.error()
+    }
+}
+
+export const editOrder = async (url: string, body: IOrder) => {
+    try {
+        await AxiosInstance.put(url+`/${body.id}`, body,
+            {
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+                }
+            }
+        )
     } catch (error) {
         console.error()
     }

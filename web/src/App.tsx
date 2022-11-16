@@ -8,6 +8,7 @@ import LoginScreen from './screens/LoginScreen';
 import SignupScreen from './screens/SignupScreen';
 import OrdersManagerScreen from './screens/OrdersManagerScreen';
 import OrderCreationScreen from './screens/OrderCreationScreen';
+import OrderEditScreen from './screens/OrderEditScreen';
 import React from 'react';
 
 function App() {
@@ -24,13 +25,12 @@ function App() {
                 <React.Fragment>
                   <Route path='/orders' element={<OrdersManagerScreen /> }/>
                   <Route path='/creat-order' element={<OrderCreationScreen /> }/>
+                  <Route path='/order/:id' element={<OrderEditScreen /> }/>
                 </React.Fragment>
-                //<Route path='/orders/:id' element={<OrderItemScreen /> }/>
             )}
           </Routes>
         </Container>
         </main>
-      <Footer/>
     </BrowserRouter>
   );
 }
