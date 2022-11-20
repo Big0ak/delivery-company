@@ -1,8 +1,8 @@
 import {FC, SyntheticEvent, useState} from 'react'
 import {Form, Button} from 'react-bootstrap'
 import FormContainer from '../components/FormContainer'
-import { IManager } from '../axios/interfaces';
-import { sendPostManager } from '../axios/hooks';
+import { IManager } from '../shared/interfaces';
+import { sendPostManager } from '../axios/services';
 import { useNavigate } from 'react-router-dom';
 
 const SignupScreen: FC = () => {

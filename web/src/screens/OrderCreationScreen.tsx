@@ -1,17 +1,17 @@
 import React, { useEffect, FC, SyntheticEvent, useState } from 'react'
-import { IClient, IOrder, IDriver } from '../axios/interfaces'
+import { IClient, IOrder, IDriver } from '../shared/interfaces'
 import {Form, Button} from 'react-bootstrap'
 import FormContainer from '../components/FormContainer'
-import { creatOrder, getAllClient, getAllDriver } from '../axios/hooks';
+import { creatOrder, getRequest } from '../axios/services';
 
 import Dropdown from 'react-bootstrap/Dropdown';
 
 const OrderCreationScreen: FC = () => {
     const [clients, setClients] = useState<IClient[]>([])
-    const [FIOclient, setFIOclient] = useState(" ")
+    const [FIOclient, setFIOclient] = useState("")
 
     const [drivers, setDrivers] = useState<IDriver[]>([])
-    const [FIOdrivers, setFIOdrivers] = useState(" ")
+    const [FIOdrivers, setFIOdrivers] = useState("")
 
     const [CliendID, setCliendID] = useState(Number)
     const [DriverID, setDriverID] = useState(Number)
@@ -25,12 +25,12 @@ const OrderCreationScreen: FC = () => {
 
     useEffect(() => {
       const getClients = async () => {
-          const response = await getAllClient("manager-api/client/")
+          const response = await getRequest("manager-api/client/")
           setClients(response)  
       }
 
       const getDrivers = async () => {
-        const response = await getAllDriver("manager-api/driver/")
+        const response = await getRequest("manager-api/driver/")
         setDrivers(response)
       }
       getClients();
@@ -79,9 +79,8 @@ const OrderCreationScreen: FC = () => {
             <React.Fragment>
               <h1>Создание заказа</h1>
               <Form onSubmit={submitHandler}>
-
-
                 <Form.Group className="mb-3" controlId="Client">
+
                   <Form.Label>Клиент</Form.Label>
                   <Dropdown>
                     <Dropdown.Toggle variant="success" id="dropdown-basic">

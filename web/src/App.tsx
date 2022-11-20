@@ -9,29 +9,43 @@ import SignupScreen from './screens/SignupScreen';
 import OrdersManagerScreen from './screens/OrdersManagerScreen';
 import OrderCreationScreen from './screens/OrderCreationScreen';
 import OrderEditScreen from './screens/OrderEditScreen';
-import React from 'react';
+import React, { useState } from 'react';
+import { AppContext } from './shared/Context';
+
 
 function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    sessionStorage.getItem("isLoggedIn") === "true" ? true : false
+  );
+
   return (
-    <BrowserRouter>
-      <Header />
-        <main>
-        <Container>
-          <Routes>
-            <Route path='/' element={<HomeScreen />} />
-            <Route path='/signup' element={<SignupScreen />} />
-            <Route path='/login' element={<LoginScreen />} />
-            {localStorage.getItem("JWT") && (
-                <React.Fragment>
-                  <Route path='/orders' element={<OrdersManagerScreen /> }/>
-                  <Route path='/creat-order' element={<OrderCreationScreen /> }/>
-                  <Route path='/order/:id' element={<OrderEditScreen /> }/>
-                </React.Fragment>
-            )}
-          </Routes>
-        </Container>
-        </main>
-    </BrowserRouter>
+    <AppContext.Provider 
+      value = {{
+        isLoggedIn,
+        setIsLoggedIn
+      }}
+    >
+      <BrowserRouter>
+        <Header />
+          <main>
+          <Container>
+            <Routes>
+              <Route path='/' element={<HomeScreen />} />
+              <Route path='/signup' element={<SignupScreen />} />
+              <Route path='/login' element={<LoginScreen />} />
+              {localStorage.getItem("JWT") && (
+                  <React.Fragment>
+                    <Route path='/orders' element={<OrdersManagerScreen /> }/>
+                    <Route path='/creat-order' element={<OrderCreationScreen /> }/>
+                    <Route path='/order/:id' element={<OrderEditScreen /> }/>
+                  </React.Fragment>
+              )}
+            </Routes>
+          </Container>
+          </main>
+      </BrowserRouter>
+    </AppContext.Provider>
+    
   );
 }
 

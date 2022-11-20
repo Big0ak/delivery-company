@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react'
-import {FC, SyntheticEvent, useState} from 'react'
-import { IOrderRead } from '../axios/interfaces'
-import { getAllOrders, searchOrderByCity, getOrderId} from '../axios/hooks';
+import { useEffect } from 'react'
+import {FC, useState} from 'react'
+import { IOrderRead } from '../shared/interfaces'
+import { getRequest, searchOrderByCity, getOrderId} from '../axios/services';
 import FormContainer from '../components/FormContainer'
 
 import Col from 'react-bootstrap/Col';
@@ -16,32 +16,28 @@ import Form from 'react-bootstrap/Form';
 const OrdersManagerScreen: FC = () => {
     const [orders, setOrders] = useState<IOrderRead[]>([])
     const [currentOrder, setCurrentOrder] = useState<IOrderRead>()
-    const [OrderID, setOrderID] = useState(String)
-    const [searchCity, setSearchCity] = useState('')
+    const [searchCity, setSearchCity] = useState("")
 
     useEffect(() => {
         const getOrders = async () => {
-            const response = await getAllOrders("manager-api/orders/")
+            const response = await getRequest("manager-api/orders/")
             setOrders(response)  
         }
         getOrders();
     }, [])
 
     const selectOrder = async (id: string) => {
-        setOrderID(id)
-        if (OrderID) {
-            const order = await getOrderId("manager-api/orders", OrderID)
+        if (id) {
+            const order = await getOrderId("manager-api/orders", id)
             setCurrentOrder(order)
-            console.log(currentOrder)
         }
     }
 
-    const SearchByCity = async () => {
+    const searchByCity = async () => {
         const response = await searchOrderByCity("manager-api/orders/search", searchCity)
         if (response && response !== null){
             setOrders(response)
         }
-        console.log(response)
     }
     
     return (
@@ -54,7 +50,7 @@ const OrdersManagerScreen: FC = () => {
                     value ={searchCity}
                     onChange={e => setSearchCity(e.target.value)}  
                 />
-                <Button variant="outline-secondary" id="button-search" onClick={SearchByCity}>
+                <Button variant="outline-secondary" id="button-search" onClick={searchByCity}>
                     Поиск
                 </Button>
             </InputGroup>
@@ -63,18 +59,23 @@ const OrdersManagerScreen: FC = () => {
                 <Row>
                     <Col sm={6}>
                         <ListGroup>
-                            {orders.map((order: IOrderRead, index: number) => (
+                            {orders.map((order: IOrderRead) => (
                                 <ListGroup.Item 
                                     key = {order.id}
+                                    onClick= {() => selectOrder(String(order.id)) }
                                 >
-                                    <Badge bg="primary" pill>
+                                    <Badge bg="badge bg-info" pill>
                                         № {order.id}
                                     </Badge>
                                     <div>
                                         <div className="fw-bold"> Маршрут: {order.departure} - {order.destination}</div>
-                                            Клиент: {order.client}
+                                        Клиент: {order.client}
                                     </div> 
-                                    <Button onClick= {() => selectOrder(String(order.id)) }>Info</Button>{' '}
+                                        <Button 
+                                            className="btn btn-info btn-sm"
+                                            onClick= {() => selectOrder(String(order.id)) }
+                                        >Подробнее
+                                        </Button>
                                 </ListGroup.Item>
                             ))}
                         </ListGroup>
@@ -85,21 +86,25 @@ const OrdersManagerScreen: FC = () => {
                             currentOrder ? (
                                 <div>
                                     <div>
-                                        <label> <strong> Номер заказа: </strong> </label> {currentOrder.id}
+                                        <label>  Номер заказа: </label> {currentOrder.id}
                                     </div>
                                     <div>
-                                        <label> <strong> Клинет : </strong> </label> {currentOrder.client}
+                                        <label> Клинет: </label> {currentOrder.client}
                                     </div>
                                     <div>
-                                        <label> <strong> Водитель : </strong> </label> {currentOrder.driver}
+                                        <label> Менеджер: </label> {currentOrder.manager.Valid ? currentOrder.manager.String: "---"}
                                     </div>
                                     <div>
-                                        <label> <strong> Вес: </strong> </label> {currentOrder.cargoWeight} т.
+                                        <label> Водитель: </label> {currentOrder.driver}
                                     </div>
                                     <div>
-                                        <label> <strong> Цена: </strong> </label> {currentOrder.price} р.
+                                        <label> Вес:  </label> {currentOrder.cargoWeight} т.
+                                    </div>
+                                    <div>
+                                        <label> Цена: </label> {currentOrder.price} р.
                                     </div>
                                     <Button
+                                        className="btn btn-outline-warning btn-link"
                                         href={`/order/${currentOrder.id}`}
                                     >
                                         Изменить

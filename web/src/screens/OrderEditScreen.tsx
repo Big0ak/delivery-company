@@ -1,75 +1,94 @@
 import React, { useEffect, FC, SyntheticEvent, useState } from 'react'
-import { IClient, IOrder, IDriver, IOrderRead } from '../axios/interfaces'
+import { IClient, IOrder, IDriver, IOrderRead } from '../shared/interfaces'
 import {Form, Button} from 'react-bootstrap'
 import FormContainer from '../components/FormContainer'
-import { getAllClient, getAllDriver, getOrderId, editOrder } from '../axios/hooks';
+import { getRequest, getOrderId, editOrder } from '../axios/services';
 import {useParams} from "react-router-dom";
-
 
 import Dropdown from 'react-bootstrap/Dropdown';
 
-
 const OrderEditScreen: FC = () => {
-    const [orderRead, setOrderRead] =useState<IOrderRead>()
+    const [orderRead, setOrderRead] =useState<IOrderRead>();
 
-  const { Id } = useParams()
+    const { id } = useParams();
 
-    const [clients, setClients] = useState<IClient[]>([])
-    const [FIOclient, setFIOclient] = useState(" ")
+    const [clients, setClients] = useState<IClient[]>([]);
+    const [FIOclient, setFIOclient] = useState("");
 
-    const [drivers, setDrivers] = useState<IDriver[]>([])
-    const [FIOdrivers, setFIOdrivers] = useState(" ")
+    const [drivers, setDrivers] = useState<IDriver[]>([]);
+    const [FIOdrivers, setFIOdrivers] = useState("");
 
-    const [CliendID, setCliendID] = useState(Number)
-    const [DriverID, setDriverID] = useState(Number)
-    const [CargoWeight, setCargoWeight] = useState(Number)
-    const [Price, setPrice] = useState(Number)
-    const [Departure, setDeparture] = useState("")
-    const [Destination, setDestination] = useState("")
+    const [CliendID, setCliendID] = useState(0);
+    const [DriverID, setDriverID] = useState(0);
+    const [CargoWeight, setCargoWeight] = useState(0);
+    const [Price, setPrice] = useState(0);
+    const [Departure, setDeparture] = useState("");
+    const [Destination, setDestination] = useState("");
 
     const [Submitted, setSubmitted] = useState(false)
-    const [OrderId, setOrderId] = useState('')
 
     useEffect(() => {
       const getClients = async () => {
-          const response = await getAllClient("manager-api/client/")
+          const response = await getRequest("manager-api/client/")
           setClients(response)  
       }
 
       const getDrivers = async () => {
-        const response = await getAllDriver("manager-api/driver/")
+        const response = await getRequest("manager-api/driver/")
         setDrivers(response)
       }
 
       const getOrderRead = async () => {
-          const response = await getOrderId("manager-api/orders", OrderId)
-          setOrderRead(response)
+          if (id) {
+            const response = await getOrderId("manager-api/orders", id)
+            setOrderRead(response)
+          }
       }
-
-      console.log(Id)
 
       getClients();
       getDrivers();
       getOrderRead();
+    
+    }, [])
 
+    useEffect(() => {
       if (orderRead) {
         setFIOclient(orderRead.client)
-  
         setFIOdrivers(orderRead.driver)
-  
+
+        let findId: number = 0
+        let strFIO = orderRead.client.split(' ')
+        clients.map((elem) => {
+          if (elem.name === strFIO[0] && elem.surname === strFIO[1]){
+            findId = elem.id
+          }
+        })
+        setCliendID(findId);
+        console.log(findId)
+
+        findId = 0
+        strFIO = orderRead.driver.split(' ')
+        drivers.map((elem) => {
+          if (elem.name == strFIO[0] && elem.surname === strFIO[1]){
+            findId = elem.id
+          }
+        })
+        setDriverID(findId)
+        console.log(findId)
+
         setDeparture(orderRead.departure)
         setDestination(orderRead.destination)
         setCargoWeight(orderRead.cargoWeight)
         setPrice(orderRead.price)
       }
-      
-    }, [])
+    }, [orderRead])
 
     const submitHandler = async (e: SyntheticEvent) => {
       e.preventDefault()
-      
+      console.log(CliendID)
+      console.log(DriverID)
       const body: IOrder = {
-        id: 1, // как получить конкретный id через ссылку
+        id: Number(id),
         clientId: CliendID,
         driverId: DriverID,
         cargoWeight: CargoWeight,
@@ -87,14 +106,18 @@ const OrderEditScreen: FC = () => {
       {
         Submitted ? (
           <div>
-            <h4>Заказ изменен!</h4>
-            <h3>номер заказа</h3>
+            <h2>Заказ №{id} изменен!</h2>
+            <Button
+                className="btn btn-link btn-light"
+                href={`/orders`}
+            >
+              к списку заказов
+            </Button>
           </div>
         ) : (
             <React.Fragment>
-              <h1>Изменение заказа {OrderId} </h1>
+              <h1>Изменение заказа №{id} </h1>
               <Form onSubmit={submitHandler}>
-
 
                 <Form.Group className="mb-3" controlId="Client">
                   <Form.Label>Клиент</Form.Label>
@@ -114,7 +137,6 @@ const OrderEditScreen: FC = () => {
                         >
                           {client.name} {client.surname}
                         </Dropdown.Item>
-
                       ))}
                     </Dropdown.Menu>
                   </Dropdown>

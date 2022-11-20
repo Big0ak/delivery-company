@@ -38,11 +38,16 @@ export interface IOrder {
     date?: string | null;
 }
 
+interface IManagerRead {
+    String : string;
+    Valid : boolean;
+} 
+
 export interface IOrderRead {
     id?: number | null;
     client: string;
     driver: string;
-    manager?: string | null;
+    manager: IManagerRead;
     cargoWeight: number;
     price: number;
     departure: string;

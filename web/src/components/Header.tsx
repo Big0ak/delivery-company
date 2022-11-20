@@ -1,10 +1,14 @@
-import React from 'react'
+import {useContext} from 'react'
 import {Navbar, Nav, Container } from 'react-bootstrap'
+import { AppContext } from '../shared/Context';
 
 const Header = () => {
+  const { isLoggedIn, setIsLoggedIn } = useContext(AppContext);
 
   const logoutHandler = () => {
+    sessionStorage.setItem("isLoggedIn", "false");
     localStorage.clear()
+    setIsLoggedIn(false)
   }
 
   return (
@@ -14,7 +18,7 @@ const Header = () => {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           {
-            localStorage.getItem("JWT") === null ? (
+            !isLoggedIn ? (
               <Nav className="ms-auto">
                 <Nav.Link href="/signup">Зарегистрироваться</Nav.Link>
                 <Nav.Link href="/login">Войти</Nav.Link>

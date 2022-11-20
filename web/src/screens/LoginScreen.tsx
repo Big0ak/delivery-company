@@ -1,12 +1,14 @@
-import {FC, SyntheticEvent, useState} from 'react'
+import {FC, SyntheticEvent, useContext, useState} from 'react'
 import {Form, Button} from 'react-bootstrap'
 import FormContainer from '../components/FormContainer'
-import { ILoginUser } from '../axios/interfaces';
-import { sendSignInManager } from '../axios/hooks';
-import { roles } from '../constants';
+import { ILoginUser } from '../shared/interfaces';
+import { sendSignInManager } from '../axios/services';
+import { roles } from '../shared/constants';
 import { useNavigate } from 'react-router-dom';
+import { AppContext } from '../shared/Context';
 
 const LoginScreen: FC = () => {
+  const { isLoggedIn, setIsLoggedIn } = useContext(AppContext);
 
   const [login, setLogin] = useState('')
   const [password, setPassword] = useState('')
@@ -19,9 +21,11 @@ const LoginScreen: FC = () => {
       password: password, 
     }
     const token = await sendSignInManager("auth/sign-in", body)
-    if (token !== null){  
+    if (token !== null){ 
+      sessionStorage.setItem("isLoggedIn", "true"); 
       localStorage.setItem('JWT', token.token)
       localStorage.setItem('role', roles.manager)
+      setIsLoggedIn(true)
     }
 
     navigate('/')
