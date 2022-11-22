@@ -56,12 +56,14 @@ const OrderCreationScreen: FC = () => {
     
     const newOrder = () => {
       setSubmitted(false)
-      setCliendID(Number)
+      setFIOclient("")
+      setCliendID(0)
+      setFIOdrivers("")
+      setDriverID(0)
       setDeparture("")
       setDestination("")
-      setDriverID(Number)
-      setCargoWeight(Number)
-      setPrice(Number)
+      setCargoWeight(0)
+      setPrice(0)
     }
 
   return (
@@ -92,7 +94,7 @@ const OrderCreationScreen: FC = () => {
                         <Dropdown.Item
                           key = {client.id}
                           onClick={() => {
-                            setCliendID(client.id)
+                            setCliendID(client.id ? client.id : 0)
                             setFIOclient(client.name + " " + client.surname)
                           }}
                         >

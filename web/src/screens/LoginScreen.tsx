@@ -2,8 +2,7 @@ import {FC, SyntheticEvent, useContext, useState} from 'react'
 import {Form, Button} from 'react-bootstrap'
 import FormContainer from '../components/FormContainer'
 import { ILoginUser } from '../shared/interfaces';
-import { sendSignInManager } from '../axios/services';
-import { roles } from '../shared/constants';
+import { sendSignIn } from '../axios/services';
 import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../shared/Context';
 
@@ -20,11 +19,11 @@ const LoginScreen: FC = () => {
       login: login,
       password: password, 
     }
-    const token = await sendSignInManager("auth/sign-in", body)
-    if (token !== null){ 
+    const response = await sendSignIn("auth/sign-in", body)
+    if (response !== null){ 
       sessionStorage.setItem("isLoggedIn", "true"); 
-      localStorage.setItem('JWT', token.token)
-      localStorage.setItem('role', roles.manager)
+      localStorage.setItem('JWT', response.token)
+      localStorage.setItem('role', response.role)
       setIsLoggedIn(true)
     }
 

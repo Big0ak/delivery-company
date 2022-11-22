@@ -2,7 +2,7 @@ import React, { useEffect, FC, SyntheticEvent, useState } from 'react'
 import { IClient, IOrder, IDriver, IOrderRead } from '../shared/interfaces'
 import {Form, Button} from 'react-bootstrap'
 import FormContainer from '../components/FormContainer'
-import { getRequest, getOrderId, editOrder } from '../axios/services';
+import { getRequest, getOrderId, editOrder, deleteOrder } from '../axios/services';
 import {useParams} from "react-router-dom";
 
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -53,40 +53,40 @@ const OrderEditScreen: FC = () => {
 
     useEffect(() => {
       if (orderRead) {
-        setFIOclient(orderRead.client)
-        setFIOdrivers(orderRead.driver)
-
-        let findId: number = 0
+        let findIdClient: number = 0
         let strFIO = orderRead.client.split(' ')
+
         clients.map((elem) => {
           if (elem.name === strFIO[0] && elem.surname === strFIO[1]){
-            findId = elem.id
+            findIdClient = Number(elem.id)
           }
         })
-        setCliendID(findId);
-        console.log(findId)
+        setCliendID(findIdClient);
 
-        findId = 0
+        let findIdDriver = 0
         strFIO = orderRead.driver.split(' ')
         drivers.map((elem) => {
           if (elem.name == strFIO[0] && elem.surname === strFIO[1]){
-            findId = elem.id
+            findIdDriver = elem.id
           }
         })
-        setDriverID(findId)
-        console.log(findId)
+        setDriverID(findIdDriver)
 
-        setDeparture(orderRead.departure)
-        setDestination(orderRead.destination)
-        setCargoWeight(orderRead.cargoWeight)
-        setPrice(orderRead.price)
+        // отображение данных только в том случае, когда присвоится Id клиента и водителя
+        // не всегда находит с первого раза, приходится перезагружать страницу
+        if (findIdClient && findIdDriver) {
+          setFIOclient(orderRead.client)
+          setFIOdrivers(orderRead.driver)
+          setDeparture(orderRead.departure)
+          setDestination(orderRead.destination)
+          setCargoWeight(orderRead.cargoWeight)
+          setPrice(orderRead.price)
+        }
       }
     }, [orderRead])
 
     const submitHandler = async (e: SyntheticEvent) => {
       e.preventDefault()
-      console.log(CliendID)
-      console.log(DriverID)
       const body: IOrder = {
         id: Number(id),
         clientId: CliendID,
@@ -101,12 +101,19 @@ const OrderEditScreen: FC = () => {
       setSubmitted(true)
     }
 
+    const submitDeleteOrder = async (e: SyntheticEvent) => {
+      e.preventDefault()
+      await deleteOrder("manager-api/orders", String(id))
+
+      setSubmitted(true)
+    }
+
   return (
     <FormContainer>
       {
         Submitted ? (
           <div>
-            <h2>Заказ №{id} изменен!</h2>
+            <h2>Подтверждено действие над заказом №{id}!</h2>
             <Button
                 className="btn btn-link btn-light"
                 href={`/orders`}
@@ -131,7 +138,7 @@ const OrderEditScreen: FC = () => {
                         <Dropdown.Item
                           key = {client.id}
                           onClick={() => {
-                            setCliendID(client.id)
+                            setCliendID(client.id ? client.id : 0)
                             setFIOclient(client.name + " " + client.surname)
                           }}
                         >
@@ -205,9 +212,14 @@ const OrderEditScreen: FC = () => {
                     onChange={e => setPrice(Number(e.target.value))}
                   />
                 </Form.Group>
-
+                
+                
                 <Button variant="primary" type="submit">
                   Сохранить
+                </Button>
+                 {' '}
+                <Button variant="primary" className="btn btn-danger" onClick={submitDeleteOrder}>
+                  Удалить
                 </Button>
               </Form>
             </React.Fragment>

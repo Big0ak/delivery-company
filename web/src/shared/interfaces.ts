@@ -6,13 +6,13 @@ export interface IManager {
 }
 
 export interface IClient {
-    id: number;
+    id?: number;
 	login: string;
 	password: string;
 	name: string;
 	surname: string;
 	phone: string;
-	registrationDate: string;
+	registrationDate?: string | null;
 }
 
 export interface IDriver {

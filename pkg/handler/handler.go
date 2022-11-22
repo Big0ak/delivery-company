@@ -106,7 +106,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		orders := user.Group("/orders")
 		{
 			orders.GET("/", h.getUserOrder)
-			orders.GET("/:id", h.getOrdersById)
+			orders.GET("/:id", h.getOrdersById) //исправить
 		}
 	}
 

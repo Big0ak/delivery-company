@@ -1,7 +1,8 @@
 import { AxiosInstance } from "./axios";
-import { IManager, ILoginUser, IOrder, IOrderRead } from "../shared/interfaces";
+import { ILoginUser, IOrder, IClient } from "../shared/interfaces";
 
-export const sendPostManager = async (url: string, body: IManager) => {
+// регистрация клиента
+export const sendPostClient = async (url: string, body: IClient) => {
     try {
         const response = await AxiosInstance.post(url, body);
         return response.data;
@@ -10,7 +11,8 @@ export const sendPostManager = async (url: string, body: IManager) => {
     }
 }
 
-export const sendSignInManager =  async (url: string, body: ILoginUser) => {
+// вход под клиентом или менеджером
+export const sendSignIn =  async (url: string, body: ILoginUser) => {
     try{
         const response = await AxiosInstance.post(url, body);
         return response.data;
@@ -21,6 +23,7 @@ export const sendSignInManager =  async (url: string, body: ILoginUser) => {
 
 // --------------------------------------------------------------------------
 
+// получение массива заказов, водителей, клиентом
 export const getRequest = async (url: string) => {
     try {
         const response = await AxiosInstance.get(url);
@@ -43,7 +46,7 @@ export const searchOrderByCity = async (url: string, city: string) => {
 
 export const getOrderId = async (url: string, id: string) => {
     try{
-        const response = await AxiosInstance.get<IOrderRead>(url+`/${id}`);
+        const response = await AxiosInstance.get(url+`/${id}`);
         return response.data;
     } catch (error) {
         console.error();
@@ -64,5 +67,13 @@ export const editOrder = async (url: string, body: IOrder) => {
         await AxiosInstance.put(url+`/${body.id}`, body);
     } catch (error) {
         console.error();
+    }
+}
+
+export const deleteOrder = async (url: string, id: string) => {
+    try {
+        await AxiosInstance.delete(url+`/${id}`);
+    } catch (error) {
+        console.error()
     }
 }

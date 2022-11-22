@@ -1,5 +1,6 @@
 import {useContext} from 'react'
 import {Navbar, Nav, Container } from 'react-bootstrap'
+import { roles } from '../shared/constants';
 import { AppContext } from '../shared/Context';
 
 const Header = () => {
@@ -24,11 +25,20 @@ const Header = () => {
                 <Nav.Link href="/login">Войти</Nav.Link>
               </Nav>
             ) : (
-              <Nav className="ms-auto">
-                <Nav.Link href="/orders">Список заказов</Nav.Link>
-                <Nav.Link href="/creat-order">Создать заказ</Nav.Link> 
-                <Nav.Link onClick={logoutHandler} href="/">Выйти</Nav.Link>
-              </Nav>
+                localStorage.getItem("role") === roles.manager ? (
+                  <Nav className="ms-auto">
+                    <Nav.Link href="/orders">Список заказов</Nav.Link>
+                    <Nav.Link href="/creat-order">Оформить заказ</Nav.Link>
+                    <Nav.Link href="/manager-cabinet">Личный кабинет</Nav.Link> 
+                    <Nav.Link onClick={logoutHandler} href="/">Выйти</Nav.Link>
+                  </Nav>
+                ) : (
+                  <Nav className="ms-auto">
+                    <Nav.Link href="/client-orders">Список заказов</Nav.Link>
+                    <Nav.Link href="/client-cabinet">Личный кабинет</Nav.Link>
+                    <Nav.Link onClick={logoutHandler} href="/">Выйти</Nav.Link>
+                  </Nav>
+                )   
             )
           }
         </Navbar.Collapse>

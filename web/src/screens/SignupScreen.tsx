@@ -1,8 +1,8 @@
 import {FC, SyntheticEvent, useState} from 'react'
 import {Form, Button} from 'react-bootstrap'
 import FormContainer from '../components/FormContainer'
-import { IManager } from '../shared/interfaces';
-import { sendPostManager } from '../axios/services';
+import { IClient } from '../shared/interfaces';
+import { sendPostClient } from '../axios/services';
 import { useNavigate } from 'react-router-dom';
 
 const SignupScreen: FC = () => {
@@ -11,17 +11,19 @@ const SignupScreen: FC = () => {
   const [lastName, setLastName] = useState('')
   const [login, setLogin] = useState('')
   const [password, setPassword] = useState('')
+  const [phone, setPhone] = useState('')
   const navigate = useNavigate()
 
   const submitHandler = async (e: SyntheticEvent) => {
     e.preventDefault()
-    const body: IManager = {
+    const body: IClient = {
       name: firstName,
       surname: lastName,
       login: login,
       password: password, 
+      phone: phone
     }
-    await sendPostManager("auth/sign-up", body)
+    await sendPostClient("auth/client-sign-up", body)
 
     navigate('/login')
   }
@@ -47,6 +49,16 @@ const SignupScreen: FC = () => {
             placeholder="введите фамилию"
             value={lastName}
             onChange={e => setLastName(e.target.value)}
+          />
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="phone">
+          <Form.Label>Телефон</Form.Label>
+          <Form.Control
+            type="phone"
+            placeholder="введите номер вашего телефона"
+            value={phone}
+            onChange={e => setPhone(e.target.value)}
           />
         </Form.Group>
 

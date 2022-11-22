@@ -58,15 +58,24 @@ func (h *Handler) signIn(c *gin.Context) {
 		return
 	}
 
-	token, err := h.services.GenerateTokenManager(input.Login, input.Password)
+	token, err := h.services.GenerateTokenClient(input.Login, input.Password)
 	if err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, err.Error()) // 500 ошибка на сервере
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"token": token,
-	})
+		token, err = h.services.GenerateTokenManager(input.Login, input.Password)
+		if err != nil {
+			newErrorResponse(c, http.StatusInternalServerError, err.Error()) // 500 ошибка на сервере
+			return
+		} else {
+			c.JSON(http.StatusOK, gin.H{
+				"token": token,
+				"role": "manager",
+			})
+		}
+	} else {
+		c.JSON(http.StatusOK, gin.H{
+			"token": token,
+			"role": "client",
+		})
+	}	
 }
 
 func (h *Handler) clientSignIn(c *gin.Context) {

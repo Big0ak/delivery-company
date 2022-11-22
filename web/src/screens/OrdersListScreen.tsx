@@ -13,28 +13,30 @@ import Button from 'react-bootstrap/Button';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Form from 'react-bootstrap/Form';
 
-const OrdersManagerScreen: FC = () => {
+const OrdersListScreen: FC = () => {
+    const [role, useRole] = useState(localStorage.getItem("role"))
     const [orders, setOrders] = useState<IOrderRead[]>([])
     const [currentOrder, setCurrentOrder] = useState<IOrderRead>()
     const [searchCity, setSearchCity] = useState("")
 
     useEffect(() => {
         const getOrders = async () => {
-            const response = await getRequest("manager-api/orders/")
+            const response = await getRequest(`${role}-api/orders/`)
             setOrders(response)  
         }
-        getOrders();
+
+        getOrders()
     }, [])
 
     const selectOrder = async (id: string) => {
         if (id) {
-            const order = await getOrderId("manager-api/orders", id)
+            const order = await getOrderId(`${role}-api/orders`, id)
             setCurrentOrder(order)
         }
     }
 
     const searchByCity = async () => {
-        const response = await searchOrderByCity("manager-api/orders/search", searchCity)
+        const response = await searchOrderByCity(`${role}-api/orders/search`, searchCity)
         if (response && response !== null){
             setOrders(response)
         }
@@ -103,6 +105,9 @@ const OrdersManagerScreen: FC = () => {
                                     <div>
                                         <label> Цена: </label> {currentOrder.price} р.
                                     </div>
+                                    <div>
+                                        <label> Дата: </label> {String(currentOrder.date).split('T')[0]}
+                                    </div>
                                     <Button
                                         className="btn btn-outline-warning btn-link"
                                         href={`/order/${currentOrder.id}`}
@@ -123,4 +128,4 @@ const OrdersManagerScreen: FC = () => {
     ) 
 }
 
-export default OrdersManagerScreen
+export default OrdersListScreen
