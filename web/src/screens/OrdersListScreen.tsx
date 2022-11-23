@@ -3,6 +3,7 @@ import {FC, useState} from 'react'
 import { IOrderRead } from '../shared/interfaces'
 import { getRequest, searchOrderByCity, getOrderId} from '../axios/services';
 import FormContainer from '../components/FormContainer'
+import { roles } from '../shared/constants'
 
 import Col from 'react-bootstrap/Col';
 import ListGroup from 'react-bootstrap/ListGroup';
@@ -14,7 +15,7 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import Form from 'react-bootstrap/Form';
 
 const OrdersListScreen: FC = () => {
-    const [role, useRole] = useState(localStorage.getItem("role"))
+    const [role] = useState(localStorage.getItem("role"))
     const [orders, setOrders] = useState<IOrderRead[]>([])
     const [currentOrder, setCurrentOrder] = useState<IOrderRead>()
     const [searchCity, setSearchCity] = useState("")
@@ -108,12 +109,14 @@ const OrdersListScreen: FC = () => {
                                     <div>
                                         <label> Дата: </label> {String(currentOrder.date).split('T')[0]}
                                     </div>
-                                    <Button
-                                        className="btn btn-outline-warning btn-link"
-                                        href={`/order/${currentOrder.id}`}
-                                    >
-                                        Изменить
-                                    </Button>
+                                    {role === roles.manager && (
+                                            <Button
+                                                className="btn btn-outline-warning btn-link"
+                                                href={`/order/${currentOrder.id}`}
+                                            >
+                                                Изменить
+                                            </Button>
+                                    )}
                                 </div>
                             ) : (
                                 <div>

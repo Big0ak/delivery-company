@@ -59,7 +59,7 @@ func (r *OrderDB) GetAllDB(managerId int) ([]models.OrdersRead, error) {
 	return orders, nil
 }
  
-func (r *OrderDB) GetByIdManagerDB(managerId, id int) (models.OrdersRead, error) {
+func (r *OrderDB) GetByIdDB(userId, id int) (models.OrdersRead, error) {
 	var order models.OrdersRead
 	query := fmt.Sprintf(`SELECT o.OrderID, c.Name + ' ' + c.Surname as 'Client', ` +
 							`d.Name + ' ' + d.Surname as 'Driver', ` +
@@ -95,17 +95,15 @@ func (r *OrderDB) UpdateManagerDB(managerId, id int, input models.Orders) error 
 	return err
 }
 
-func (r *OrderDB) SearchOrdersByCityDB(managerId int, city string) ([]models.OrdersRead, error){
+func (r *OrderDB) SearchOrdersByCityManagerDB(managerId int, city string) ([]models.OrdersRead, error){
 	var orders []models.OrdersRead
-	queryWITH := fmt.Sprintf(`WITH Order_full AS (SELECT o.OrderID, c.Name + ' ' + c.Surname as 'Client', ` +
-							`d.Name + ' ' + d.Surname as 'Driver', ` +
-							`m.Name + ' ' + m.Surname as 'Manager', ` +
-							`o.CargoWeight, o.Price, o.Departure, o.Destination, o.Date FROM %s o ` +
-								`JOIN %s c ON o.ClientID = c.ClientID ` +
-								`JOIN %s d ON o.DriverID = d.DriverID ` +
-								`LEFT JOIN %s m ON o.ManagerID = m.ManagerID)`,
-								 	ordersTable, clientTable, driverTable, managerTable)
-	query := fmt.Sprintf(queryWITH + `SELECT * FROM Order_full o WHERE o.Departure LIKE '%%%s%%' OR o.Destination LIKE '%%%s%%'`, city, city)
+	query := fmt.Sprintf(`SELECT o.OrderID, c.Name + ' ' + c.Surname as 'Client',` +
+						`d.Name + ' ' + d.Surname as 'Driver',` +
+						`m.Name + ' ' + m.Surname as 'Manager',` +
+						`o.CargoWeight, o.Price, o.Departure, o.Destination, o.Date FROM (SELECT * FROM %s od WHERE od.Departure LIKE '%%%s%%' OR od.Destination LIKE '%%%s%%') o ` +
+							`JOIN %s c ON o.ClientID = c.ClientID ` +
+							`JOIN %s d ON o.DriverID = d.DriverID ` +
+							`LEFT JOIN %s m ON o.ManagerID = m.ManagerID`, ordersTable, city, city, clientTable, driverTable, managerTable)
 	rows, err := r.db.Query(query)
 	if err != nil {
 		return nil, err
@@ -137,6 +135,35 @@ func (r *OrderDB) GetUserOrderDB(clientId int) ([]models.OrdersRead, error) {
 								`LEFT JOIN %s m ON o.ManagerID = m.ManagerID `,
 								 	ordersTable, clientId, clientTable, driverTable, managerTable)
 
+	rows, err := r.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		o := models.OrdersRead{}
+		var price []uint8
+		err := rows.Scan(
+			&o.OrderID, &o.Client, &o.Driver, &o.Manager, &o.CargoWeight, &price, &o.Departure, &o.Destination, &o.Date)
+		if err != nil {
+			return nil, err
+		}
+		// конвертация sql price = []uint8 -> uint
+		o.Price = ConvertPriceToUint(price[:])
+		orders = append(orders, o)
+	}
+	return orders, nil
+}
+
+func (r *OrderDB) SearchOrdersByCityClientDB(clientId int, city string) ([]models.OrdersRead, error){
+	var orders []models.OrdersRead
+	query := fmt.Sprintf(`SELECT o.OrderID, c.Name + ' ' + c.Surname as 'Client',` +
+						`d.Name + ' ' + d.Surname as 'Driver',` +
+						`m.Name + ' ' + m.Surname as 'Manager',` +
+						`o.CargoWeight, o.Price, o.Departure, o.Destination, o.Date FROM (SELECT * FROM %s od WHERE od.ClientID = %d AND (od.Departure LIKE '%%%s%%' OR od.Destination LIKE '%%%s%%')) o ` +
+							`JOIN %s c ON o.ClientID = c.ClientID ` +
+							`JOIN %s d ON o.DriverID = d.DriverID ` +
+							`LEFT JOIN %s m ON o.ManagerID = m.ManagerID`, ordersTable, clientId, city, city, clientTable, driverTable, managerTable)
 	rows, err := r.db.Query(query)
 	if err != nil {
 		return nil, err

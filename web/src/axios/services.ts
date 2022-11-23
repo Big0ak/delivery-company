@@ -77,3 +77,12 @@ export const deleteOrder = async (url: string, id: string) => {
         console.error()
     }
 }
+
+export const getInfoUser = async (url: string) => {
+    try {
+        const responce = await AxiosInstance.get(url);
+        return responce.data
+    } catch (error) {
+        console.error()
+    }
+}

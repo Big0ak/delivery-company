@@ -18,8 +18,8 @@ func (s *OrderService) GetAll(managerId int) ([]models.OrdersRead, error) {
 	return s.repo.GetAllDB(managerId)
 }
 
-func (s *OrderService) GetByIdManager(managerid, id int) (models.OrdersRead, error) {
-	return s.repo.GetByIdManagerDB(managerid, id)
+func (s *OrderService) GetById(userId, id int) (models.OrdersRead, error) {
+	return s.repo.GetByIdDB(userId, id)
 }
 
 func (s *OrderService) DeleteManager(managerid, id int) error {
@@ -34,6 +34,10 @@ func (s *OrderService) GetUserOrder(clientId int) ([]models.OrdersRead, error) {
 	return s.repo.GetUserOrderDB(clientId)
 }
 
-func (s *OrderService) SearchOrdersByCity(managerId int, city string) ([]models.OrdersRead, error) {
-	return s.repo.SearchOrdersByCityDB(managerId, city)
+func (s *OrderService) SearchOrdersByCityManager(managerId int, city string) ([]models.OrdersRead, error) {
+	return s.repo.SearchOrdersByCityManagerDB(managerId, city)
+}
+
+func (s *OrderService) SearchOrdersByCityClient(clientId int, city string) ([]models.OrdersRead, error) {
+	return s.repo.SearchOrdersByCityClientDB(clientId, city)
 }

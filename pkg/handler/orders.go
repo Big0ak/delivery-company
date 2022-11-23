@@ -52,8 +52,8 @@ func (h *Handler) getAllOrders(c *gin.Context){
 	})
 }
 
-func (h *Handler) getOrdersById(c *gin.Context){
-	managerid, err := getManagerId(c)
+func (h *Handler) getOrderByIdManager(c *gin.Context){
+	managerId, err := getManagerId(c)
 	if err != nil {
 		return
 	}
@@ -64,7 +64,7 @@ func (h *Handler) getOrdersById(c *gin.Context){
 		return
 	}
 
-	order, err := h.services.GetByIdManager(managerid, id)
+	order, err := h.services.GetById(managerId, id)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -125,7 +125,7 @@ func (h *Handler) deleteOrdersManager(c *gin.Context){
 	})
 }
 
-func (h *Handler) searchOrdersByCity(c *gin.Context){
+func (h *Handler) searchOrdersByCityManager(c *gin.Context){
 	managerId, err := getManagerId(c)
 	if err != nil {
 		return
@@ -133,7 +133,7 @@ func (h *Handler) searchOrdersByCity(c *gin.Context){
 
 	city := c.Param("city")
 
-	listOrders, err := h.services.SearchOrdersByCity(managerId, city)
+	listOrders, err := h.services.SearchOrdersByCityManager(managerId, city)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -144,7 +144,7 @@ func (h *Handler) searchOrdersByCity(c *gin.Context){
 	})
 }
 
-// client function 
+// ---------------------------- client function ----------------------------
 func (h *Handler) getUserOrder (c *gin.Context){
 	clientId, err := getClientId(c)
 	if err != nil {
@@ -159,5 +159,45 @@ func (h *Handler) getUserOrder (c *gin.Context){
 	
 	c.JSON(http.StatusOK, getOrdersResponse{
 		Data: listOrsers,
+	})
+}
+
+func (h *Handler) getOrderByIdClient(c *gin.Context){
+	clientId, err := getClientId(c)
+	if err != nil {
+		return
+	}
+
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, "invalid id param")
+		return
+	}
+
+	order, err := h.services.GetById(clientId, id)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON (http.StatusOK, order)
+}
+
+func (h *Handler) searchOrdersByCityClient(c *gin.Context){
+	clientId, err := getClientId(c)
+	if err != nil {
+		return
+	}
+
+	city := c.Param("city")
+
+	listOrders, err := h.services.SearchOrdersByCityClient(clientId, city)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, getOrdersResponse{
+		Data: listOrders,
 	})
 }

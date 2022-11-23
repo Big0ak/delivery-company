@@ -77,22 +77,3 @@ func (h *Handler) signIn(c *gin.Context) {
 		})
 	}	
 }
-
-func (h *Handler) clientSignIn(c *gin.Context) {
-	var input signInInput
-
-	if err := c.BindJSON(&input); err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error()) // 400
-		return
-	}
-
-	token, err := h.services.GenerateTokenClient(input.Login, input.Password)
-	if err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, err.Error()) // 500
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"token": token,
-	})
-}

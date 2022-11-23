@@ -12,6 +12,7 @@ import OrderEditScreen from './screens/OrderEditScreen';
 import React, { useState } from 'react';
 import { AppContext } from './shared/Context';
 import { roles } from './shared/constants';
+import CabinetScreen from './screens/CabinetScreen';
 
 
 function App() {
@@ -31,18 +32,20 @@ function App() {
           <main>
           <Container>
             <Routes>
-              <Route path='/' element={<HomeScreen />} />
-              <Route path='/signup' element={<SignupScreen />} />
-              <Route path='/login' element={<LoginScreen />} />
+              <Route path='/' element={<HomeScreen/>} />
+              <Route path='/signup' element={<SignupScreen/>} />
+              <Route path='/login' element={<LoginScreen/>} />
               {localStorage.getItem("role") === roles.manager ? (
                   <React.Fragment>
-                    <Route path='/orders' element={<OrdersListScreen /> }/>
-                    <Route path='/creat-order' element={<OrderCreationScreen /> }/>
-                    <Route path='/order/:id' element={<OrderEditScreen /> }/>
+                    <Route path='/orders' element={<OrdersListScreen/>} />
+                    <Route path='/creat-order' element={<OrderCreationScreen/>} />
+                    <Route path='/order/:id' element={<OrderEditScreen/>} />
+                    <Route path='/manager-cabinet' element={<CabinetScreen/>} />
                   </React.Fragment>
               ) : (
                 <React.Fragment>
-                    <Route path='/client-orders' element={<OrdersListScreen /> }/>
+                    <Route path='/client-orders' element={<OrdersListScreen/>} />
+                    <Route path='/client-cabinet' element={<CabinetScreen/>} />
                   </React.Fragment>
               )}
             </Routes>
