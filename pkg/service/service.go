@@ -1,6 +1,11 @@
 package service
 
-import "github.com/Big0ak/delivery-company/models"
+import (
+	"crypto/sha1"
+	"fmt"
+
+	"github.com/Big0ak/delivery-company/models"
+)
 
 type Service struct {
 	*AuthService
@@ -25,7 +30,7 @@ type OrderDB interface{
 	CreateManagerDB(managerId int, order models.Orders) (int, error)
 	GetAllDB(managerId int) ([]models.OrdersRead, error)
 	DeleteManagerDB(managerId, id int) error
-	UpdateManagerDB(managerId, id int, input models.Orders) error
+	UpdateOrderManagerDB(managerId, id int, input models.Orders) error
 	SearchOrdersByCityManagerDB(managerId int, city string) ([]models.OrdersRead, error)
 	
 	GetByIdDB(userId, id int) (models.OrdersRead, error)
@@ -42,7 +47,11 @@ type DriverDB interface{
 }
 
 type CabinetDB interface{
+	GetInfoManagerDB(managerId int) (models.Manager, error)
+	UpdateManagerDB(managerId int, manager models.Manager) error
+
 	GetInfoClientDB(clientId int) (models.Client, error)
+	UpdateClientDB(clientId int, client models.Client) error
 }
 
 type Repository interface{
@@ -64,4 +73,15 @@ func NewService(repos Repository, AuthDB AuthorizationDB, OrderDB OrderDB, Clien
 		DriverService: NewDriverService(DriverDB),
 		CabinetService: NewCabinetService(CabinetDB),
 	} 
+}
+
+const (
+	salt = "uf3b289g38bf83nf3"
+)
+
+func generatePasswordHash(password string) string {
+	hash := sha1.New()
+	hash.Write([]byte(password))
+
+	return fmt.Sprintf("%x", hash.Sum([]byte(salt)))
 }

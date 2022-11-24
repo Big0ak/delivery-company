@@ -2,8 +2,8 @@ package handler
 
 import (
 	"github.com/Big0ak/delivery-company/models"
-	"github.com/gin-gonic/gin"
 	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 )
 
 type Handler struct{
@@ -27,7 +27,7 @@ type Orders interface {
 	CreateManager(managerId int, order models.Orders) (int, error)
 	GetAll(managerId int) ([]models.OrdersRead, error)
 	DeleteManager(managerId, id int) error
-	UpdateManager(managerId, id int, input models.Orders) error
+	UpdateOrderManager(managerId, id int, input models.Orders) error
 	SearchOrdersByCityManager(managerId int, city string) ([]models.OrdersRead, error)
 	
 	// для менеджера и клиента
@@ -47,7 +47,13 @@ type Driver interface {
 }
 
 type Cabinet interface {
+	// функции менеджера
+	GetInfoManager(managerId int) (models.Manager, error)
+	UpdateManager(mamagerId int, manager models.Manager) error 
+
+	// функции клиента
 	GetInfoClient(clientId int) (models.Client, error)
+	UpdateClient(clientId int, client models.Client) error
 }
 
 type Services interface {
@@ -78,12 +84,12 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	{
 		// регистрация  менеджера
 		auth.POST("/sign-up", h.signUp)
+		
+		// регистрация пользователя
+		auth.POST("/client-sign-up", h.clientSignUp)
 
 		// авторизация клиента и менеджера
 		auth.POST("/sign-in", h.signIn)
-
-		// регистрация пользователя
-		auth.POST("/client-sign-up", h.clientSignUp)
 	}
 
 	manager := router.Group("/manager-api", h.managerIdentity)
@@ -106,6 +112,12 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		driver := manager.Group("/driver")
 		{
 			driver.GET("/", h.getAllDriver)
+		}
+
+		cabinet := manager.Group("/cabinet")
+		{
+			cabinet.GET("/", h.getInfoManager)
+			cabinet.PUT("/", h.updateManager)
 		}
 	}
 

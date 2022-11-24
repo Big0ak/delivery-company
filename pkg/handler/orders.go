@@ -91,7 +91,7 @@ func (h *Handler) updateOrders(c *gin.Context){
 		return
 	}
 
-	err = h.services.UpdateManager(managerid, id, input)
+	err = h.services.UpdateOrderManager(managerid, id, input)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return

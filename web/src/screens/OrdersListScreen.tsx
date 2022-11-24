@@ -37,9 +37,11 @@ const OrdersListScreen: FC = () => {
     }
 
     const searchByCity = async () => {
-        const response = await searchOrderByCity(`${role}-api/orders/search`, searchCity)
-        if (response && response !== null){
-            setOrders(response)
+        if (searchCity !== ''){
+            const response = await searchOrderByCity(`${role}-api/orders/search`, searchCity)
+            if (response && response !== null){
+                setOrders(response)
+            }
         }
     }
     

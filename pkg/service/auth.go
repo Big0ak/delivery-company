@@ -1,9 +1,7 @@
 package service
 
 import (
-	"crypto/sha1"
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/Big0ak/delivery-company/models"
@@ -11,7 +9,6 @@ import (
 )
 
 const (
-	salt = "uf3b289g38bf83nf3"
 	signingKeyManager = "g43g4nii#23523f3j3i2r"
 	signingKeyClient = "vu43v98be2io3bvv^be4"
 	tokenTTL = 12 * time.Hour
@@ -26,17 +23,17 @@ func NewAuthServise(repo AuthorizationDB) *AuthService {
 }
 
 func (s *AuthService) CreateNewManager(manager models.Manager) (int, error) {
-	manager.Password = s.generatePasswordHash(manager.Password)
+	manager.Password = generatePasswordHash(manager.Password)
 	return s.repo.CreateNewManagerDB(manager)
 }
 
 func (s *AuthService) CreateNewClient(client models.Client) (int, error) {
-	client.Password = s.generatePasswordHash(client.Password)
+	client.Password = generatePasswordHash(client.Password)
 	return s.repo.CreateNewClientDB(client)
 }
 
 func (s *AuthService) GenerateTokenManager(managerLogin, password string) (string, error) {
-	manager, err := s.repo.GetManager(managerLogin, s.generatePasswordHash(password))
+	manager, err := s.repo.GetManager(managerLogin, generatePasswordHash(password))
 	if err != nil {
 		return "", err
 	}
@@ -53,7 +50,7 @@ func (s *AuthService) GenerateTokenManager(managerLogin, password string) (strin
 }
 
 func (s *AuthService) GenerateTokenClient(clientLogin, password string) (string, error) {
-	client, err := s.repo.GetClient(clientLogin, s.generatePasswordHash(password))
+	client, err := s.repo.GetClient(clientLogin, generatePasswordHash(password))
 	if err != nil {
 		return "", err
 	}
@@ -121,11 +118,4 @@ func (s *AuthService) ParseTokenClient(accessToken string) (int, error) {
 	}
 
 	return claims.ClientId, nil
-}
-
-func (s *AuthService) generatePasswordHash(password string) string {
-	hash := sha1.New()
-	hash.Write([]byte(password))
-
-	return fmt.Sprintf("%x", hash.Sum([]byte(salt)))
 }

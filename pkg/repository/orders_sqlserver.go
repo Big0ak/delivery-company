@@ -87,7 +87,7 @@ func (r *OrderDB) DeleteManagerDB(managerId, id int) error {
 }
 
 	
-func (r *OrderDB) UpdateManagerDB(managerId, id int, input models.Orders) error {
+func (r *OrderDB) UpdateOrderManagerDB(managerId, id int, input models.Orders) error {
 	query := fmt.Sprintf("UPDATE %s SET ClientID = %d, DriverID = %d, ManagerID = %d, CargoWeight = %d, Price = %d, Departure = '%s', Destination = '%s' WHERE OrderID = %d",
 		ordersTable, input.ClientID, input.DriverID,
 		managerId, input.CargoWeight, input.Price, input.Departure, input.Destination, id)

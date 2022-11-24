@@ -26,8 +26,8 @@ func (s *OrderService) DeleteManager(managerid, id int) error {
 	return s.repo.DeleteManagerDB(managerid, id)
 }
 
-func (s *OrderService) UpdateManager(managerid, id int, input models.Orders) error {
-	return s.repo.UpdateManagerDB(managerid, id, input)
+func (s *OrderService) UpdateOrderManager(managerid, id int, input models.Orders) error {
+	return s.repo.UpdateOrderManagerDB(managerid, id, input)
 }
 
 func (s *OrderService) GetUserOrder(clientId int) ([]models.OrdersRead, error) {

@@ -1,5 +1,5 @@
 import { AxiosInstance } from "./axios";
-import { ILoginUser, IOrder, IClient } from "../shared/interfaces";
+import { ILoginUser, IOrder, IClient, IManager } from "../shared/interfaces";
 
 // регистрация клиента
 export const sendPostClient = async (url: string, body: IClient) => {
@@ -82,6 +82,14 @@ export const getInfoUser = async (url: string) => {
     try {
         const responce = await AxiosInstance.get(url);
         return responce.data
+    } catch (error) {
+        console.error()
+    }
+}
+
+export const updateUser = async (url: string, body: IClient | IManager) => {
+    try {
+        await AxiosInstance.put(url, body)
     } catch (error) {
         console.error()
     }
