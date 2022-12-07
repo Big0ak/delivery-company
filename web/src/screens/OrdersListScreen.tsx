@@ -13,6 +13,7 @@ import Badge from 'react-bootstrap/Badge';
 import Button from 'react-bootstrap/Button';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Form from 'react-bootstrap/Form';
+import Nav from 'react-bootstrap/Nav';
 
 const OrdersListScreen: FC = () => {
     const [role] = useState(localStorage.getItem("role"))
@@ -44,7 +45,17 @@ const OrdersListScreen: FC = () => {
             }
         }
     }
+
+    const getActiveOrders = async () => {
+        const response = await getRequest(`${role}-api/orders/active`)
+        setOrders(response)  
+    }
     
+    const getCompletedOrders = async () => {
+        const response = await getRequest(`${role}-api/orders/completed`)
+        setOrders(response) 
+    }
+
     return (
         <FormContainer>
             <InputGroup className="mb-3">
@@ -59,6 +70,15 @@ const OrdersListScreen: FC = () => {
                     Поиск
                 </Button>
             </InputGroup>
+
+            <Nav variant="tabs">
+                <Nav.Item>
+                    <Nav.Link onClick = {getActiveOrders}>Активные</Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                    <Nav.Link onClick = {getCompletedOrders}>Завершенные</Nav.Link>
+                </Nav.Item>
+            </Nav>
 
             <Tab.Container id="list-group-tabs-example">
                 <Row>
@@ -109,7 +129,10 @@ const OrdersListScreen: FC = () => {
                                         <label> Цена: </label> {currentOrder.price} р.
                                     </div>
                                     <div>
-                                        <label> Дата: </label> {String(currentOrder.date).split('T')[0]}
+                                        <label> Дата создания: </label> {String(currentOrder.date).split('T')[0]}
+                                    </div>
+                                    <div>
+                                        <label> Дата выполнения заказа: </label> {String(currentOrder.deliveryDate).split('T')[0]}
                                     </div>
                                     {role === roles.manager && (
                                             <Button

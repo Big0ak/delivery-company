@@ -19,6 +19,7 @@ const OrderCreationScreen: FC = () => {
     const [Price, setPrice] = useState(Number)
     const [Departure, setDeparture] = useState("")
     const [Destination, setDestination] = useState("")
+    const [DeliveryDate, setDeliveryDate] = useState("")
 
     const [Submitted, setSubmitted] = useState(false)
     const [OrderId, setOrderId] = useState()
@@ -47,6 +48,7 @@ const OrderCreationScreen: FC = () => {
         price: Price,
         departure: Departure,
         destination: Destination,
+        deliveryDate: DeliveryDate,
       }
       const response = await creatOrder("manager-api/orders/", body)
 
@@ -63,6 +65,7 @@ const OrderCreationScreen: FC = () => {
       setDeparture("")
       setDestination("")
       setCargoWeight(0)
+      setDeliveryDate("")
       setPrice(0)
     }
 
@@ -160,6 +163,16 @@ const OrderCreationScreen: FC = () => {
                   />
                 </Form.Group>
                 
+                <Form.Group className="mb-3" controlId="deliveryDate">
+                  <Form.Label>Дата посавки</Form.Label>
+                  <input
+                    type="date"
+                    className="form-control"
+                    value={DeliveryDate}
+                    onChange={e => setDeliveryDate(e.target.value)}
+                  />
+                </Form.Group>
+
                 <Form.Group className="mb-3" controlId="price">
                   <Form.Label>Цена (р)</Form.Label>
                   <Form.Control 

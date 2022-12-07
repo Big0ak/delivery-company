@@ -36,6 +36,7 @@ export interface IOrder {
     departure: string;
 	destination: string;
     date?: string | null;
+    deliveryDate: string;
 }
 
 interface IManagerRead {
@@ -53,4 +54,5 @@ export interface IOrderRead {
     departure: string;
 	destination: string;
     date?: string | null;
+    deliveryDate: string;
 }

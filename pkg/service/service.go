@@ -29,12 +29,15 @@ type AuthorizationDB interface{
 type OrderDB interface{
 	CreateManagerDB(managerId int, order models.Orders) (int, error)
 	GetAllDB(managerId int) ([]models.OrdersRead, error)
+	GetAllWithStatusDB(managerId int, status string) ([]models.OrdersRead, error)
 	DeleteManagerDB(managerId, id int) error
 	UpdateOrderManagerDB(managerId, id int, input models.Orders) error
 	SearchOrdersByCityManagerDB(managerId int, city string) ([]models.OrdersRead, error)
 	
 	GetByIdDB(userId, id int) (models.OrdersRead, error)
+
 	GetUserOrderDB(clientId int) ([]models.OrdersRead, error)
+	GetAllWithStatusUserDB(clientId int, status string) ([]models.OrdersRead, error)
 	SearchOrdersByCityClientDB(clientId int, city string) ([]models.OrdersRead, error)
 }
 

@@ -47,8 +47,42 @@ func (h *Handler) getAllOrders(c *gin.Context){
 		return
 	}
 
-	c.JSON (http.StatusOK, getOrdersResponse {
+	c.JSON(http.StatusOK, getOrdersResponse {
 		Data: listOrsers,
+	})
+}
+
+func (h *Handler) getAllActiveOrders(c *gin.Context){
+	managerId, err := getManagerId(c)
+	if err != nil {
+		return
+	}
+
+	listOrders, err := h.services.GetAllWithStatus(managerId, "active")
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, getOrdersResponse{
+		Data: listOrders,
+	})
+}
+
+func (h *Handler) getAllCompletedOrders(c *gin.Context){
+	managerId, err := getManagerId(c)
+	if err != nil {
+		return
+	}
+
+	listOrders, err := h.services.GetAllWithStatus(managerId, "completed")
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, getOrdersResponse{
+		Data: listOrders,
 	})
 }
 
@@ -144,7 +178,10 @@ func (h *Handler) searchOrdersByCityManager(c *gin.Context){
 	})
 }
 
-// ---------------------------- client function ----------------------------
+// -------------------------------------------------------------------------------------------------
+// ------------------------------ Client function --------------------------------------------------
+// -------------------------------------------------------------------------------------------------
+
 func (h *Handler) getUserOrder (c *gin.Context){
 	clientId, err := getClientId(c)
 	if err != nil {
@@ -159,6 +196,40 @@ func (h *Handler) getUserOrder (c *gin.Context){
 	
 	c.JSON(http.StatusOK, getOrdersResponse{
 		Data: listOrsers,
+	})
+}
+
+func (h *Handler) getAllActiveUserOrders (c *gin.Context){
+	clientId, err := getClientId(c)
+	if err != nil {
+		return
+	}
+
+	listOrders, err := h.services.GetAllWithStatusUserDB(clientId, "active")
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, getOrdersResponse{
+		Data: listOrders,
+	})
+}
+
+func (h *Handler) getAllCompletedUserOrders (c *gin.Context){
+	clientId, err := getClientId(c)
+	if err != nil {
+		return
+	}
+
+	listOrders, err := h.services.GetAllWithStatusUserDB(clientId, "completed")
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, getOrdersResponse{
+		Data: listOrders,
 	})
 }
 

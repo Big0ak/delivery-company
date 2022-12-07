@@ -26,6 +26,7 @@ type Orders interface {
 	// функции для менеджера
 	CreateManager(managerId int, order models.Orders) (int, error)
 	GetAll(managerId int) ([]models.OrdersRead, error)
+	GetAllWithStatus(managerId int, status string) ([]models.OrdersRead, error)
 	DeleteManager(managerId, id int) error
 	UpdateOrderManager(managerId, id int, input models.Orders) error
 	SearchOrdersByCityManager(managerId int, city string) ([]models.OrdersRead, error)
@@ -35,6 +36,7 @@ type Orders interface {
 
 	// для клиента
 	GetUserOrder(clientId int) ([]models.OrdersRead, error)
+	GetAllWithStatusUserDB(clientId int, status string) ([]models.OrdersRead, error)
 	SearchOrdersByCityClient(clientId int, city string) ([]models.OrdersRead, error) 
 }
 
@@ -98,6 +100,8 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		{
 			orders.POST("/", h.createOrdersManager)
 			orders.GET("/", h.getAllOrders)
+			orders.GET("/active", h.getAllActiveOrders)
+			orders.GET("/completed", h.getAllCompletedOrders)
 			orders.GET("/:id", h.getOrderByIdManager)
 			orders.PUT("/:id", h.updateOrders)
 			orders.DELETE("/:id", h.deleteOrdersManager)
@@ -126,6 +130,8 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		orders := user.Group("/orders")
 		{
 			orders.GET("/", h.getUserOrder)
+			orders.GET("/active", h.getAllActiveUserOrders)
+			orders.GET("/completed", h.getAllCompletedUserOrders)
 			orders.GET("/:id", h.getOrderByIdClient) //Возможно лучше делать отдельным запросом
 			orders.GET("/search/:city", h.searchOrdersByCityClient)
 		}

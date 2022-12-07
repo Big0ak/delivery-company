@@ -18,8 +18,8 @@ func NewOrderDB(db *sql.DB) *OrderDB {
 
 func (r *OrderDB) CreateManagerDB(managerId int, order models.Orders) (int, error) {
 	var id int
-	creatOrder := fmt.Sprintf("INSERT INTO %s (ClientID, DriverID, ManagerID, CargoWeight, Price, Departure, Destination) OUTPUT Inserted.OrderID VALUES('%d', '%d', '%d', '%d','%d', '%s', '%s')",
-		ordersTable, order.ClientID, order.DriverID, managerId, order.CargoWeight, order.Price, order.Departure, order.Destination)
+	creatOrder := fmt.Sprintf("INSERT INTO %s (ClientID, DriverID, ManagerID, CargoWeight, Price, Departure, Destination, DeliveryDate ) OUTPUT Inserted.OrderID VALUES('%d', '%d', '%d', '%d','%d', '%s', '%s', '%s')",
+		ordersTable, order.ClientID, order.DriverID, managerId, order.CargoWeight, order.Price, order.Departure, order.Destination, order.DeliveryDate)
 	row := r.db.QueryRow(creatOrder)
 	if err := row.Scan(&id); err != nil {
 		return 0, err
@@ -33,7 +33,7 @@ func (r *OrderDB) GetAllDB(managerId int) ([]models.OrdersRead, error) {
 	query := fmt.Sprintf(`SELECT o.OrderID, c.Name + ' ' + c.Surname as 'Client', ` +
 							`d.Name + ' ' + d.Surname as 'Driver', ` +
 							`m.Name + ' ' + m.Surname as 'Manager', ` +
-							`o.CargoWeight, o.Price, o.Departure, o.Destination, o.Date FROM %s o ` +
+							`o.CargoWeight, o.Price, o.Departure, o.Destination, o.Date, o.DeliveryDate FROM %s o ` +
 								`JOIN %s c ON o.ClientID = c.ClientID ` +
 								`JOIN %s d ON o.DriverID = d.DriverID ` +
 								`LEFT JOIN %s m ON o.ManagerID = m.ManagerID `,
@@ -48,7 +48,44 @@ func (r *OrderDB) GetAllDB(managerId int) ([]models.OrdersRead, error) {
 		o := models.OrdersRead{}
 		var price []uint8
 		err := rows.Scan(
-			&o.OrderID, &o.Client, &o.Driver, &o.Manager, &o.CargoWeight, &price, &o.Departure, &o.Destination, &o.Date)
+			&o.OrderID, &o.Client, &o.Driver, &o.Manager, &o.CargoWeight, &price, &o.Departure, &o.Destination, &o.Date, &o.DeliveryDate)
+		if err != nil {
+			return nil, err
+		}
+		// конвертация sql price = []uint8 -> uint
+		o.Price = ConvertPriceToUint(price[:])
+		orders = append(orders, o)
+	}
+	return orders, nil
+}
+
+func (r *OrderDB) GetAllWithStatusDB(managerId int, status string) ([]models.OrdersRead, error) {
+	var orders []models.OrdersRead
+	var sign string
+	if status == "active" {
+		sign = ">="
+	} else {
+		sign = "<"
+	}
+	query := fmt.Sprintf(`SELECT o.OrderID, c.Name + ' ' + c.Surname as 'Client', ` +
+							`d.Name + ' ' + d.Surname as 'Driver', ` +
+							`m.Name + ' ' + m.Surname as 'Manager', ` +
+							`o.CargoWeight, o.Price, o.Departure, o.Destination, o.Date, o.DeliveryDate FROM (SELECT * FROM %s od WHERE DATEDIFF(day, GETDATE(), od.DeliveryDate) %s 0) o  ` +
+								`JOIN %s c ON o.ClientID = c.ClientID ` +
+								`JOIN %s d ON o.DriverID = d.DriverID ` +
+								`LEFT JOIN %s m ON o.ManagerID = m.ManagerID `,
+								 	ordersTable, sign, clientTable, driverTable, managerTable)
+
+	rows, err := r.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		o := models.OrdersRead{}
+		var price []uint8
+		err := rows.Scan(
+			&o.OrderID, &o.Client, &o.Driver, &o.Manager, &o.CargoWeight, &price, &o.Departure, &o.Destination, &o.Date, &o.DeliveryDate)
 		if err != nil {
 			return nil, err
 		}
@@ -64,14 +101,14 @@ func (r *OrderDB) GetByIdDB(userId, id int) (models.OrdersRead, error) {
 	query := fmt.Sprintf(`SELECT o.OrderID, c.Name + ' ' + c.Surname as 'Client', ` +
 							`d.Name + ' ' + d.Surname as 'Driver', ` +
 							`m.Name + ' ' + m.Surname as 'Manager', ` +
-							`o.CargoWeight, o.Price, o.Departure, o.Destination, o.Date FROM (SELECT * FROM %s od WHERE od.OrderID = %d) o ` +
+							`o.CargoWeight, o.Price, o.Departure, o.Destination, o.Date, o.DeliveryDate FROM (SELECT * FROM %s od WHERE od.OrderID = %d) o ` +
 								`JOIN %s c ON o.ClientID = c.ClientID ` +
 								`JOIN %s d ON o.DriverID = d.DriverID ` +
 								`LEFT JOIN %s m ON o.ManagerID = m.ManagerID `,
 								 	ordersTable, id, clientTable, driverTable, managerTable)
 	row := r.db.QueryRow(query)
 	var price []uint8
-	err := row.Scan(&order.OrderID, &order.Client, &order.Driver, &order.Manager, &order.CargoWeight, &price, &order.Departure, &order.Destination, &order.Date)
+	err := row.Scan(&order.OrderID, &order.Client, &order.Driver, &order.Manager, &order.CargoWeight, &price, &order.Departure, &order.Destination, &order.Date, &order.DeliveryDate)
 	if err != nil {
 		return models.OrdersRead{}, err
 	}
@@ -88,9 +125,9 @@ func (r *OrderDB) DeleteManagerDB(managerId, id int) error {
 
 	
 func (r *OrderDB) UpdateOrderManagerDB(managerId, id int, input models.Orders) error {
-	query := fmt.Sprintf("UPDATE %s SET ClientID = %d, DriverID = %d, ManagerID = %d, CargoWeight = %d, Price = %d, Departure = '%s', Destination = '%s' WHERE OrderID = %d",
+	query := fmt.Sprintf("set dateformat ymd UPDATE %s SET ClientID = %d, DriverID = %d, ManagerID = %d, CargoWeight = %d, Price = %d, Departure = '%s', Destination = '%s', DeliveryDate = '%s' WHERE OrderID = %d",
 		ordersTable, input.ClientID, input.DriverID,
-		managerId, input.CargoWeight, input.Price, input.Departure, input.Destination, id)
+		managerId, input.CargoWeight, input.Price, input.Departure, input.Destination, input.DeliveryDate, id)
 	_, err := r.db.Exec(query)
 	return err
 }
@@ -100,7 +137,7 @@ func (r *OrderDB) SearchOrdersByCityManagerDB(managerId int, city string) ([]mod
 	query := fmt.Sprintf(`SELECT o.OrderID, c.Name + ' ' + c.Surname as 'Client',` +
 						`d.Name + ' ' + d.Surname as 'Driver',` +
 						`m.Name + ' ' + m.Surname as 'Manager',` +
-						`o.CargoWeight, o.Price, o.Departure, o.Destination, o.Date FROM (SELECT * FROM %s od WHERE od.Departure LIKE '%%%s%%' OR od.Destination LIKE '%%%s%%') o ` +
+						`o.CargoWeight, o.Price, o.Departure, o.Destination, o.Date, o.DeliveryDate FROM (SELECT * FROM %s od WHERE od.Departure LIKE '%%%s%%' OR od.Destination LIKE '%%%s%%') o ` +
 							`JOIN %s c ON o.ClientID = c.ClientID ` +
 							`JOIN %s d ON o.DriverID = d.DriverID ` +
 							`LEFT JOIN %s m ON o.ManagerID = m.ManagerID`, ordersTable, city, city, clientTable, driverTable, managerTable)
@@ -113,7 +150,7 @@ func (r *OrderDB) SearchOrdersByCityManagerDB(managerId int, city string) ([]mod
 		o := models.OrdersRead{}
 		var price []uint8
 		err := rows.Scan(
-			&o.OrderID, &o.Client, &o.Driver, &o.Manager, &o.CargoWeight, &price, &o.Departure, &o.Destination, &o.Date)
+			&o.OrderID, &o.Client, &o.Driver, &o.Manager, &o.CargoWeight, &price, &o.Departure, &o.Destination, &o.Date, &o.DeliveryDate)
 		if err != nil {
 			return nil, err
 		}
@@ -124,12 +161,17 @@ func (r *OrderDB) SearchOrdersByCityManagerDB(managerId int, city string) ([]mod
 	return orders, nil
 }
 
+// -------------------------------------------------------------------------------------------------
+// ------------------------------ Client function --------------------------------------------------
+// -------------------------------------------------------------------------------------------------
+
+
 func (r *OrderDB) GetUserOrderDB(clientId int) ([]models.OrdersRead, error) {
 	var orders []models.OrdersRead
 	query := fmt.Sprintf(`SELECT o.OrderID, c.Name + ' ' + c.Surname as 'Client', ` +
 							`d.Name + ' ' + d.Surname as 'Driver', ` +
 							`m.Name + ' ' + m.Surname as 'Manager', ` +
-							`o.CargoWeight, o.Price, o.Departure, o.Destination, o.Date FROM (SELECT * FROM %s od WHERE od.ClientID = %d) o ` +
+							`o.CargoWeight, o.Price, o.Departure, o.Destination, o.Date, o.DeliveryDate FROM (SELECT * FROM %s od WHERE od.ClientID = %d) o ` +
 								`JOIN %s c ON o.ClientID = c.ClientID ` +
 								`JOIN %s d ON o.DriverID = d.DriverID ` +
 								`LEFT JOIN %s m ON o.ManagerID = m.ManagerID `,
@@ -144,7 +186,44 @@ func (r *OrderDB) GetUserOrderDB(clientId int) ([]models.OrdersRead, error) {
 		o := models.OrdersRead{}
 		var price []uint8
 		err := rows.Scan(
-			&o.OrderID, &o.Client, &o.Driver, &o.Manager, &o.CargoWeight, &price, &o.Departure, &o.Destination, &o.Date)
+			&o.OrderID, &o.Client, &o.Driver, &o.Manager, &o.CargoWeight, &price, &o.Departure, &o.Destination, &o.Date, &o.DeliveryDate)
+		if err != nil {
+			return nil, err
+		}
+		// конвертация sql price = []uint8 -> uint
+		o.Price = ConvertPriceToUint(price[:])
+		orders = append(orders, o)
+	}
+	return orders, nil
+}
+
+func (r *OrderDB) GetAllWithStatusUserDB(clientId int, status string) ([]models.OrdersRead, error) {
+	var orders []models.OrdersRead
+	var sign string
+	if status == "active" {
+		sign = ">="
+	} else {
+		sign = "<"
+	}
+	query := fmt.Sprintf(`SELECT o.OrderID, c.Name + ' ' + c.Surname as 'Client', ` +
+							`d.Name + ' ' + d.Surname as 'Driver', ` +
+							`m.Name + ' ' + m.Surname as 'Manager', ` +
+							`o.CargoWeight, o.Price, o.Departure, o.Destination, o.Date, o.DeliveryDate FROM (SELECT * FROM %s od WHERE (DATEDIFF(day, GETDATE(), od.DeliveryDate) %s 0 AND od.ClientID = %d)) o ` +
+								`JOIN %s c ON o.ClientID = c.ClientID ` +
+								`JOIN %s d ON o.DriverID = d.DriverID ` +
+								`LEFT JOIN %s m ON o.ManagerID = m.ManagerID `,
+								 	ordersTable, sign, clientId, clientTable, driverTable, managerTable)
+
+	rows, err := r.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		o := models.OrdersRead{}
+		var price []uint8
+		err := rows.Scan(
+			&o.OrderID, &o.Client, &o.Driver, &o.Manager, &o.CargoWeight, &price, &o.Departure, &o.Destination, &o.Date, &o.DeliveryDate)
 		if err != nil {
 			return nil, err
 		}
@@ -160,7 +239,7 @@ func (r *OrderDB) SearchOrdersByCityClientDB(clientId int, city string) ([]model
 	query := fmt.Sprintf(`SELECT o.OrderID, c.Name + ' ' + c.Surname as 'Client',` +
 						`d.Name + ' ' + d.Surname as 'Driver',` +
 						`m.Name + ' ' + m.Surname as 'Manager',` +
-						`o.CargoWeight, o.Price, o.Departure, o.Destination, o.Date FROM (SELECT * FROM %s od WHERE od.ClientID = %d AND (od.Departure LIKE '%%%s%%' OR od.Destination LIKE '%%%s%%')) o ` +
+						`o.CargoWeight, o.Price, o.Departure, o.Destination, o.Date, o.DeliveryDate FROM (SELECT * FROM %s od WHERE od.ClientID = %d AND (od.Departure LIKE '%%%s%%' OR od.Destination LIKE '%%%s%%')) o ` +
 							`JOIN %s c ON o.ClientID = c.ClientID ` +
 							`JOIN %s d ON o.DriverID = d.DriverID ` +
 							`LEFT JOIN %s m ON o.ManagerID = m.ManagerID`, ordersTable, clientId, city, city, clientTable, driverTable, managerTable)
@@ -173,7 +252,7 @@ func (r *OrderDB) SearchOrdersByCityClientDB(clientId int, city string) ([]model
 		o := models.OrdersRead{}
 		var price []uint8
 		err := rows.Scan(
-			&o.OrderID, &o.Client, &o.Driver, &o.Manager, &o.CargoWeight, &price, &o.Departure, &o.Destination, &o.Date)
+			&o.OrderID, &o.Client, &o.Driver, &o.Manager, &o.CargoWeight, &price, &o.Departure, &o.Destination, &o.Date, &o.DeliveryDate)
 		if err != nil {
 			return nil, err
 		}

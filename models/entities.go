@@ -19,25 +19,27 @@ type Driver struct {
 }
 
 type Orders struct {
-	OrderID     int           `json:"id"`
-	ClientID    int           `json:"clientId" binding:"required"`
-	DriverID    int           `json:"driverid" binding:"required"`
-	ManagerID   sql.NullInt64 `json:"managerId"`
-	CargoWeight int           `json:"cargoWeight" binding:"required"`
-	Price       uint          `json:"price" binding:"required"`
-	Departure   string        `json:"departure" binding:"required"`
-	Destination string        `json:"destination" binding:"required"`
-	Date        string        `json:"date"`
+	OrderID      int           `json:"id"`
+	ClientID     int           `json:"clientId" binding:"required"`
+	DriverID     int           `json:"driverid" binding:"required"`
+	ManagerID    sql.NullInt64 `json:"managerId"`
+	CargoWeight  int           `json:"cargoWeight" binding:"required"`
+	Price        uint          `json:"price" binding:"required"`
+	Departure    string        `json:"departure" binding:"required"`
+	Destination  string        `json:"destination" binding:"required"`
+	Date         string        `json:"date"`
+	DeliveryDate string        `json:"deliveryDate" binding:"required"`
 }
 
 type OrdersRead struct {
-	OrderID     int            `json:"id"`
-	Client      string         `json:"client" binding:"required"`
-	Driver      string         `json:"driver" binding:"required"`
-	Manager     sql.NullString `json:"manager" binding:"required"`
-	CargoWeight int            `json:"cargoWeight" binding:"required"`
-	Price       uint           `json:"price" binding:"required"`
-	Departure   string         `json:"departure" binding:"required"`
-	Destination string         `json:"destination" binding:"required"`
-	Date        string         `json:"date"`
+	OrderID      int            `json:"id"`
+	Client       string         `json:"client" binding:"required"`
+	Driver       string         `json:"driver" binding:"required"`
+	Manager      sql.NullString `json:"manager" binding:"required"`
+	CargoWeight  int            `json:"cargoWeight" binding:"required"`
+	Price        uint           `json:"price" binding:"required"`
+	Departure    string         `json:"departure" binding:"required"`
+	Destination  string         `json:"destination" binding:"required"`
+	Date         string         `json:"date"`
+	DeliveryDate string         `json:"deliveryDate" binding:"required"`
 }

@@ -18,6 +18,10 @@ func (s *OrderService) GetAll(managerId int) ([]models.OrdersRead, error) {
 	return s.repo.GetAllDB(managerId)
 }
 
+func (s *OrderService) GetAllWithStatus(managerId int, status string) ([]models.OrdersRead, error) {
+	return s.repo.GetAllWithStatusDB(managerId, status)
+}
+
 func (s *OrderService) GetById(userId, id int) (models.OrdersRead, error) {
 	return s.repo.GetByIdDB(userId, id)
 }
@@ -30,8 +34,17 @@ func (s *OrderService) UpdateOrderManager(managerid, id int, input models.Orders
 	return s.repo.UpdateOrderManagerDB(managerid, id, input)
 }
 
+// -------------------------------------------------------------------------------------------------
+// ------------------------------ Client function --------------------------------------------------
+// -------------------------------------------------------------------------------------------------
+
+
 func (s *OrderService) GetUserOrder(clientId int) ([]models.OrdersRead, error) {
 	return s.repo.GetUserOrderDB(clientId)
+}
+
+func (s *OrderService) GetAllWithStatusUserDB(clientId int, status string) ([]models.OrdersRead, error) {
+	return s.repo.GetAllWithStatusUserDB(clientId, status)
 }
 
 func (s *OrderService) SearchOrdersByCityManager(managerId int, city string) ([]models.OrdersRead, error) {
