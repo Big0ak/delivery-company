@@ -1,0 +1,726 @@
+basePath: /
+definitions:
+  handler.errorResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  handler.signInInput:
+    properties:
+      login:
+        type: string
+      password:
+        type: string
+    required:
+    - login
+    - password
+    type: object
+  models.Client:
+    properties:
+      id:
+        type: integer
+      login:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+      registrationDate:
+        type: string
+      surname:
+        type: string
+    required:
+    - login
+    - name
+    - password
+    - phone
+    - surname
+    type: object
+  models.Manager:
+    properties:
+      login:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      surname:
+        type: string
+    required:
+    - login
+    - name
+    - password
+    - surname
+    type: object
+  models.Orders:
+    properties:
+      cargoWeight:
+        type: integer
+      clientId:
+        type: integer
+      date:
+        type: string
+      deliveryDate:
+        type: string
+      departure:
+        type: string
+      destination:
+        type: string
+      driverid:
+        type: integer
+      id:
+        type: integer
+      managerId:
+        type: string
+      price:
+        type: integer
+    required:
+    - cargoWeight
+    - clientId
+    - deliveryDate
+    - departure
+    - destination
+    - driverid
+    - price
+    type: object
+host: localhost:8000
+info:
+  contact: {}
+  description: API Server for Delivery company Application
+  license: {}
+  title: Delivery company
+  version: "1.0"
+paths:
+  /auth/client-sign-up:
+    post:
+      consumes:
+      - application/json
+      description: creat client account
+      operationId: creat-client-account
+      parameters:
+      - description: account info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.Client'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Client SignUp
+      tags:
+      - Auth
+  /auth/sign-in:
+    post:
+      consumes:
+      - application/json
+      description: login to your personal account
+      operationId: login-account
+      parameters:
+      - description: account info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/handler.signInInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: SignIn
+      tags:
+      - Auth
+  /auth/sign-up:
+    post:
+      consumes:
+      - application/json
+      description: create manager account
+      operationId: create-manager-account
+      parameters:
+      - description: account info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.Manager'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Manager SignUp
+      tags:
+      - Auth
+  /client-api/cabinet/:
+    get:
+      description: getting information about the client
+      operationId: get-info-client
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get info client
+      tags:
+      - Client
+    put:
+      consumes:
+      - application/json
+      description: update information about the client
+      operationId: update-info-client
+      parameters:
+      - description: new info client
+        in: body
+        name: client
+        required: true
+        schema:
+          $ref: '#/definitions/models.Client'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: update info client
+      tags:
+      - Client
+  /client-api/orders/:
+    get:
+      description: Get all orders by a client
+      operationId: get-all-orders-client
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get all client orders
+      tags:
+      - Client
+  /client-api/orders/{id}:
+    get:
+      consumes:
+      - application/json
+      description: get order by id client
+      operationId: get-order-byid-client
+      parameters:
+      - description: ordre id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get order by id
+      tags:
+      - Client
+  /client-api/orders/active:
+    get:
+      description: Get active orders by a client
+      operationId: get-all-active-orders-client
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get active orders
+      tags:
+      - Client
+  /client-api/orders/completed:
+    get:
+      description: Get completed orders by a client
+      operationId: get-all-completed-orders-client
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get completed orders
+      tags:
+      - Client
+  /client-api/orders/search/{city}:
+    get:
+      consumes:
+      - application/json
+      description: search order by a client
+      operationId: search-order-client
+      parameters:
+      - description: name city
+        in: path
+        name: city
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Search order
+      tags:
+      - Client
+  /manager-api/cabinet/:
+    get:
+      description: getting information about the manager
+      operationId: get-info-manager
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get info manager
+      tags:
+      - Manager
+    put:
+      consumes:
+      - application/json
+      description: update information about the manager
+      operationId: update-info-manager
+      parameters:
+      - description: new info manager
+        in: body
+        name: manager
+        required: true
+        schema:
+          $ref: '#/definitions/models.Manager'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: update info manager
+      tags:
+      - Manager
+  /manager-api/client/:
+    get:
+      description: Get all clietn by a manager
+      operationId: get-all-client-manager
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get all client
+      tags:
+      - Manager
+  /manager-api/driver/:
+    get:
+      description: Get all driver by a manager
+      operationId: get-all-driver-manager
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get all driver
+      tags:
+      - Manager
+  /manager-api/orders/:
+    get:
+      description: Get all orders by a manager
+      operationId: get-all-orders-manager
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get all orders
+      tags:
+      - Manager
+    post:
+      consumes:
+      - application/json
+      description: creating an order by a manager
+      operationId: creat-order-manager
+      parameters:
+      - description: order info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.Orders'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Creat order
+      tags:
+      - Manager
+  /manager-api/orders/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete order by a manager
+      operationId: delete-order-manager
+      parameters:
+      - description: order id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete order
+      tags:
+      - Manager
+    get:
+      consumes:
+      - application/json
+      description: get order by id manager
+      operationId: get-order-byid-manager
+      parameters:
+      - description: ordre id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get order by id
+      tags:
+      - Manager
+    put:
+      consumes:
+      - application/json
+      description: update order by a manager
+      operationId: update-order-manager
+      parameters:
+      - description: order id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: new info order
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.Orders'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update order
+      tags:
+      - Manager
+  /manager-api/orders/active:
+    get:
+      description: Get all active orders by a manager
+      operationId: get-all-active-orders-manager
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get all active orders
+      tags:
+      - Manager
+  /manager-api/orders/completed:
+    get:
+      description: Get all completed orders by a manager
+      operationId: get-all-completed-orders-manager
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get all completed orders
+      tags:
+      - Manager
+  /manager-api/orders/search/{city}:
+    get:
+      consumes:
+      - application/json
+      description: search order by a manager
+      operationId: search-order-manager
+      parameters:
+      - description: name city
+        in: path
+        name: city
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Search order
+      tags:
+      - Manager
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

@@ -1,7 +1,6 @@
 package main
 
 import (
-	//"log"
 	"os"
 
 	api "github.com/Big0ak/delivery-company/api"
@@ -12,6 +11,17 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
+
+// @title Delivery company
+// @version 1.0
+// @description API Server for Delivery company Application
+
+// @host localhost:8000
+// @BasePath /
+
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
 
 func main() {
 	log.SetFormatter((new(log.JSONFormatter))) // JSON формат для log
